@@ -48,7 +48,6 @@ class MAX31856(object):
             spidev (SPI): max31856 communication interface
         """
         self._spi = spidev
-        self._tc_type = None
 
     def connect(self):
         self._spi.open()
