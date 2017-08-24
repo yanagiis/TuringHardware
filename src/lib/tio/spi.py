@@ -3,6 +3,7 @@
 
 from lib.tio import tio
 from spidev import SpiDev
+from logzero import logger
 
 
 class SPIConfig(object):
@@ -49,16 +50,18 @@ class HWSPI(SPI):
         """
         Args:
             device (int): the number of SPI device
-            ce (int): the number of chip select of SPI devic
+            ce (int): the number of chip select of SPI device
         """
         self._device = device
         self._ce = ce
         self._spi = SpiDev()
 
     def open(self):
+        logger.info("Open SPI(%d,%d)", self._device, self._ce)
         self._spi.open()
 
     def close(self):
+        logger.info("Close SPI(%d,%d)", self._device, self._ce)
         self._spi.close()
 
     def transfer(self, writedata, readsize):

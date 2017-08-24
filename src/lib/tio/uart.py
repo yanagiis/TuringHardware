@@ -3,6 +3,7 @@
 
 from lib.tio import tio
 from serial import Serial
+from logzero import logger
 
 
 class UARTConfig(object):
@@ -27,6 +28,7 @@ class UARTConfig(object):
 class UART(tio.IO, tio.Reader, tio.Writer):
     """ UART interface
     """
+
     def __init__(self, devpath, uart_config):
         """
         Args:
@@ -44,11 +46,14 @@ class UART(tio.IO, tio.Reader, tio.Writer):
                 self._config.baudrate,
                 timeout=self._config.read_timeout,
                 writeTimeout=self._config.write_timeout)
+            logger.info("Open '%s' with baudrate %d", self._devpath,
+                        self._config.baudrate)
 
     def close(self):
         if self._serial is not None:
             self._serial.close()
             self._serial = None
+            logger.info("Close '%s'", self._devpath)
 
     def read(self, readsize):
         return self._serial.read(readsize)
