@@ -46,11 +46,12 @@ class HWSPI(SPI):
     """ Hardware SPI
     """
 
-    def __init__(self, device, ce):
+    def __init__(self, device, ce, config):
         """
         Args:
             device (int): the number of SPI device
             ce (int): the number of chip select of SPI device
+            config (SPIConfig):
         """
         self._device = device
         self._ce = ce
