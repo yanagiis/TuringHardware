@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+from lib.proto.textproto import TextProto
+
+
 class Smoothie(object):
     def __init__(self, uartdev):
         """
@@ -5,6 +11,7 @@ class Smoothie(object):
             uartdev (UART)
         """
         self._uart = uartdev
+        self._textproto = TextProto(self._uart, self._uart, 64)
 
     def connect(self, retry_times):
         """
@@ -31,7 +38,7 @@ class Smoothie(object):
         Args:
             data (str): Gcode to write
         """
-        self._uart.writeline(data)
+        self._textproto.writeline(data)
 
     def recv(self):
-        return self._uart.readlien().strip()
+        return self._textproto.readline().strip()
