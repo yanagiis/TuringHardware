@@ -17,9 +17,9 @@ class TextProto(object):
             max_buffer_size (int): maximum buffer size this TextProto can use
         """
 
-        if (not isinstance(reader, tio.Reader)):
+        if not isinstance(reader, tio.Reader):
             raise TypeError("arg 'reader' is not tio.Reader")
-        if (not isinstance(writer, tio.Writer)):
+        if not isinstance(writer, tio.Writer):
             raise TypeError("arg 'writer' is not tio.Writer")
 
         self._reader = reader
