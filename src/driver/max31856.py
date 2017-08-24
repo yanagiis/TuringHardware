@@ -55,7 +55,7 @@ class MAX31856(object):
     def disconnect(self):
         self._spi.close()
 
-    def readMeasureTempC(self):
+    def read_measure_temp_c(self):
         [temp0, temp1, temp2, fault] = self._read_reg(MAX31856.ADDR_LTCBH, 4)
 
         if fault != 0:
@@ -68,7 +68,7 @@ class MAX31856(object):
 
         return tempc * MAX31856.RESOLUTION_TC
 
-    def readColdJunctionTempC(self):
+    def read_coldjunction_temp_c(self):
         [temp0, temp1] = self._read_reg(MAX31856.ADDR_CJTH, 2)
         tempc = ((temp0 << 8) | temp1) >> 2
         if temp0 & 0x80 != 0:

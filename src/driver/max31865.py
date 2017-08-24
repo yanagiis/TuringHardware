@@ -63,7 +63,7 @@ class MAX31865(object):
     def disconnect(self):
         self._spi.close()
 
-    def readMeasureTempC(self):
+    def read_measure_temp_c(self):
         [rtd_msb, rtd_lsb] = self._read_reg(MAX31865.ADDR_RTDH, 2)
         if rtd_lsb & 0x1 != 0:
             raise RTDSensorError("MAX31865 get fault")
