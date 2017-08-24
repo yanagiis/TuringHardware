@@ -30,17 +30,17 @@ class NullWriter(tio.Writer):
         pass
 
 
-class TestTextProto(object):
-    def test_normal_readline(self):
-        textproto = TextProto(HelloReader(), NullWriter(), 1024)
-        line = textproto.readline()
-        assert line == "hello\r\n"
-        line = textproto.readline()
-        assert line == "hello\r\n"
+def test_normal_readline():
+    textproto = TextProto(HelloReader(), NullWriter(), 1024)
+    line = textproto.readline()
+    assert line == "hello\r\n"
+    line = textproto.readline()
+    assert line == "hello\r\n"
 
-    def test_overflow_readline(self):
-        textproto = TextProto(OverflowReader(), NullWriter(), 1024)
-        line = textproto.readline()
-        assert line == "hihihi\r\n"
-        line = textproto.readline()
-        assert line == "hihihi\r\n"
+
+def test_overflow_readline():
+    textproto = TextProto(OverflowReader(), NullWriter(), 1024)
+    line = textproto.readline()
+    assert line == "hihihi\r\n"
+    line = textproto.readline()
+    assert line == "hihihi\r\n"
