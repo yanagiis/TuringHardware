@@ -36,19 +36,19 @@ hardwares:
   - max31856:
       name: "max31856-0"
       tc_type: "T"
-      dev: "spi0"
+      dev: "spi-0"
 
   - max31865:
       name: "max31865-0"
-      dev: "spi1"
+      dev: "spi-1"
 
   - smoothie:
       name: "smoothie-0"
-      dev: "uart0"
+      dev: "uart-0"
 
   - extruder:
       name: "extruder-0"
-      dev: "tcpuart0"
+      dev: "tcpuart-0"
 
 services:
 
