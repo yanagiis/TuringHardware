@@ -66,6 +66,7 @@ class MAX31865(object):
     def read_measure_temp_c(self):
         [rtd_msb, rtd_lsb] = self._read_reg(MAX31865.ADDR_RTDH, 2)
         if rtd_lsb & 0x1 != 0:
+            logger.error("MAX31865 get fault")
             raise RTDSensorError("MAX31865 get fault")
 
         rtd_adc_code = ((rtd_msb << 8) | rtd_lsb) >> 1
