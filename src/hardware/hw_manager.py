@@ -17,14 +17,19 @@ class HWManager(object):
     def __init__(self):
         self._hardwares = {}
 
-    def import_config(self, configs):
+    def import_config(self, loop, configs):
+        """
+        Args:
+            loop (asyncio.loop): used by hardware
+            configs (dict): hardware configuration
+        """
         for config in configs:
             hardware_type = list(config.keys())[0]
             if hardware_type not in HARDWARE_MAPPING:
                 logger.error("Cannot resolve '%s' type", hardware_type)
                 continue
-            driver = HARDWARE_MAPPING[hardware_type](self,
-                                                     config[hardware_type])
+            driver = HARDWARE_MAPPING[hardware_type](config[hardware_type],
+                                                     self, loop)
 
             name = config[hardware_type]['name']
             if driver is not None:
@@ -39,7 +44,7 @@ class HWManager(object):
         return self._hardwares[name]
 
 
-def create_max31856(hwm, hardware_config):
+def create_max31856(hardware_config, hwm, _):
     tc_type = hardware_config['tc_type']
     dev = hardware_config['dev']
 
@@ -66,30 +71,28 @@ def create_max31856(hwm, hardware_config):
 
     spidev = hwm.find_hardware(dev)
     if spidev is None:
-        logger.warning("Cannot find hardware '%s' for now",
-                       hardware_config['name'])
-        return ValueError("Cannot find hardware '%s' for now" % hardware_config['name'])
+        logger.warning("Cannot find hardware '%s' for now", dev)
+        return ValueError("Cannot find hardware '%s' for now" % dev)
 
     return MAX31856(spidev)
 
 
-def create_max31865(hwm, hardware_config):
+def create_max31865(hardware_config, hwm, _):
     dev = hardware_config['dev']
     spidev = hwm.find_hardware(dev)
     if spidev is None:
-        logger.warning("Cannot find hardware '%s' for now",
-                       hardware_config['name'])
+        logger.warning("Cannot find hardware '%s' for now", dev)
         return None
 
     return MAX31865(spidev)
 
 
-def create_pwm(_, hardware_config):
+def create_pwm(hardware_config, _, loop):
     gpio_pin = hardware_config['gpio']
-    return SWPWM(gpio_pin)
+    return SWPWM(gpio_pin, loop)
 
 
-def create_smoothie(hwm, hardware_config):
+def create_smoothie(hardware_config, hwm, _):
     dev = hardware_config['dev']
     uartdev = hwm.find_hardware(dev)
     if uartdev is None:
@@ -100,7 +103,7 @@ def create_smoothie(hwm, hardware_config):
     return Smoothie(uartdev)
 
 
-def create_hwspi(_, hardware_config):
+def create_hwspi(hardware_config, *_):
     spi_config = SPIConfig()
     spi_config.speed = hardware_config['speed']
     spi_config.mode = hardware_config['mode']
@@ -109,7 +112,7 @@ def create_hwspi(_, hardware_config):
     return HWSPI(number, chipselect, spi_config)
 
 
-def create_uart(_, hardware_config):
+def create_uart(hardware_config, *_):
     uart_config = UARTConfig()
     uart_config.baudrate = hardware_config['baudrate']
     uart_config.rtscts = hardware_config['rtscts']
