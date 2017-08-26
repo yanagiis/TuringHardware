@@ -55,7 +55,7 @@ services:
   output_sensor:
     enable: true
     scan_interval_ms: 1000
-    driver: "max31856-0"
+    dev: "max31856-0"
 
   tank_sensor:
     enable: true
