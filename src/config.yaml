@@ -1,0 +1,81 @@
+hardwares:
+
+  - hwspi:
+      name: "spi-0"
+      number: 0
+      chipselect: 0
+      speed: 100000
+      mode: 3 # CPOL=1 and CPHA=1
+
+  - uart:
+      name: "uart-0"
+      devpath: "/dev/ttyUSB0"
+      baudrate: 115200
+      rtscts: false
+      dsrdtr: false
+      read_timeout: 1
+      write_timeout: 1
+
+  - uart:
+      name: "tcpuart-0"
+      devpath: "rfc2217://turing-coffee-client"
+      baudrate: 57600
+      rtscts: false
+      dsrdtr: false
+      read_timeout: 2
+      write_timeout: 2
+
+  - swpwm:
+      name: "pwm-0"
+      gpio: 1
+
+  - swpwm:
+      name: "pwm-1"
+      gpio: 2
+
+  - max31856:
+      name: "max31856-0"
+      tc_type: "T"
+      dev: "spi0"
+
+  - max31865:
+      name: "max31865-0"
+      dev: "spi1"
+
+  - smoothie:
+      name: "smoothie-0"
+      dev: "uart0"
+
+  - extruder:
+      name: "extruder-0"
+      dev: "tcpuart0"
+
+services:
+
+  output_sensor:
+    enable: true
+    scan_interval_ms: 1000
+    driver: "max31856-0"
+
+  tank_sensor:
+    enable: true
+    scan_interval_ms: 1000
+    dev: "max31865-0"
+
+  heater:
+    enable: true
+    scan_interval_ms: 1000
+    dev: "pwm-0"
+    P: 2
+    I: 0.25
+    D: 1
+
+  refiller:
+    enable: true
+    scan_interval_ms: 1000
+    dev: "pwm-1"
+
+  brewer:
+    enable: true
+    moving_dev: "smoothie-0"
+    extrude_dev: "extruder-0"
