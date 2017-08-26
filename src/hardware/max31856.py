@@ -76,7 +76,7 @@ class MAX31856(object):
 
         return tempc * MAX31856.RESOLUTION_CJ
 
-    @tc_type.getter
+    @property
     def tc_type(self):
         cr1 = self._read_reg(MAX31856.ADDR_CR1, 1)
         return cr1 & 0x7
@@ -93,7 +93,7 @@ class MAX31856(object):
         cr1 = (cr1 & 0xf0) | tc_type
         self._write_reg(MAX31856.ADDR_CR1, [cr1])
 
-    @sample_avg.getter
+    @property
     def sample_avg(self):
         avg = self._read_reg(MAX31856.ADDR_CR1, 1)
         return avg >> 4

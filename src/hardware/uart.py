@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from lib.tio import tio
-from serial import Serial
+from serial import serial_for_url
 from logzero import logger
 
 
@@ -37,17 +37,15 @@ class UART(tio.IO, tio.Reader, tio.Writer):
         """
         self._devpath = devpath
         self._config = uart_config
-        self._serial = None
+        self._serial = serial_for_url(self._devpath, do_not_open=True)
 
     def open(self):
-        if self._serial is None:
-            self._serial = Serial(
-                self._devpath,
-                self._config.baudrate,
-                timeout=self._config.read_timeout,
-                writeTimeout=self._config.write_timeout)
-            logger.info("Open '%s' with baudrate %d", self._devpath,
-                        self._config.baudrate)
+        self._serial.baudrate = self._config.baudrate
+        self._serial.timeout = self._config.read_timeout
+        self._serial.writeTimeout = self._config.write_timeout
+        logger.info("Open '%s' with baudrate %d", self._devpath,
+                    self._config.baudrate)
+        self._serial.open()
 
     def close(self):
         if self._serial is not None:

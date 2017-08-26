@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 from lib.tio import tio
 from periphery import GPIO
 import asyncio
@@ -23,7 +26,7 @@ class PWM(tio.IO):
         raise NotImplementedError
 
 
-class SWPWN(PWM):
+class SWPWM(PWM):
     """ Software PWM
     """
 
@@ -46,7 +49,7 @@ class SWPWN(PWM):
     def close(self):
         self._gpio = GPIO(self._gpio, "in")
 
-    @dutycycle.getter
+    @property
     def dutycycle(self):
         """
         dutycycle (float): 0 - 1 (0% - 100%)
@@ -59,7 +62,7 @@ class SWPWN(PWM):
             raise ValueError("Duty cycle should be ranged in 0 and 1")
         self._dutycycle = dutycycle
 
-    @frequency.getter
+    @property
     def frequency(self):
         """
         frequency (int): hz
