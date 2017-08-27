@@ -60,7 +60,7 @@ class HWSPI(SPI):
 
     def open(self):
         logger.info("Open SPI(%d,%d)", self._device, self._ce)
-        self._spi.open()
+        self._spi.open(self._device, self._ce)
         self._spi.mode = self._config.mode
         self._spi.speed = self._config.spped
 
