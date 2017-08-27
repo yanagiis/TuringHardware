@@ -6,6 +6,7 @@ from hardware.max31865 import MAX31865
 from hardware.max31856 import MAX31856, TC
 from hardware.pwm import SWPWM
 from hardware.smoothie import Smoothie
+from hardware.extruder import Extruder
 from hardware.spi import HWSPI, SPIConfig
 from hardware.uart import UART, UARTConfig
 
@@ -103,6 +104,17 @@ def create_smoothie(hardware_config, hwm, _):
     return Smoothie(uartdev)
 
 
+def create_extruder(hardware_config, hwm, _):
+    dev = hardware_config['dev']
+    uartdev = hwm.find_hardware(dev)
+    if uartdev is None:
+        logger.warning("Cannot find hardware '%s' for now",
+                       hardware_config['name'])
+        return None
+
+    return Extruder(uartdev)
+
+
 def create_hwspi(hardware_config, *_):
     spi_config = SPIConfig()
     spi_config.speed = hardware_config['speed']
@@ -127,6 +139,7 @@ HARDWARE_MAPPING = {
     "max31865": create_max31865,
     "swpwm": create_pwm,
     "smoothie": create_smoothie,
+    "extruder": create_extruder,
     "hwspi": create_hwspi,
     "uart": create_uart
 }
