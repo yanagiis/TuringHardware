@@ -24,7 +24,7 @@ def main():
     pwm0 = hwm.find_hardware('pwm-0')
 
     pwm0.open()
-    pwm0.dutycycle = 50
+    pwm0.dutycycle = 0.5
     pwm0.frequency = 10
     loop.run_until_complete(pwm0.start())
     pwm0.close()
