@@ -78,10 +78,10 @@ class SWPWM(PWM):
             on_time = self._dutycycle / self._freq
             off_time = (1 - self._dutycycle) / self._freq
             if on_time > 0:
-                self._gpio.write(1)
+                self._gpio.write(True)
                 await asyncio.sleep(on_time)
             if off_time > 0:
-                self._gpio.write(0)
+                self._gpio.write(False)
                 await asyncio.sleep(off_time)
 
     def stop(self):
