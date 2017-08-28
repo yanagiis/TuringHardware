@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sys
 import asyncio
 import signal
 import time
@@ -8,11 +9,9 @@ import yaml
 from hardware.hw_manager import HWManager
 from hardware.max31856 import MAX31856, TC
 
-main_stop = False
-
 
 def signal_int_handler(*_):
-    main_stop = True
+    sys.exit(1)
 
 
 def main():
@@ -27,7 +26,7 @@ def main():
     max31856.connect()
     max31856.tc_type = TC.T_TYPE
     max31856.mode = MAX31856.MODE_AUTOMATIC
-    while not main_stop:
+    while True:
         print(max31856.read_measure_temp_c())
         time.sleep(0.5)
     max31856.disconnect()
