@@ -41,6 +41,9 @@ class MAX31856(object):
     ADDR_LTCBL = 0xE
     ADDR_SR = 0xF
 
+    MODE_MANUAL = 0
+    MODE_AUTOMATIC = 1
+
     RESOLUTION_TC = 0.0078125
     RESOLUTION_CJ = 0.015625
 
@@ -105,6 +108,17 @@ class MAX31856(object):
         [avg] = self._read_reg(MAX31856.ADDR_CR1, 1)
         avg = (avg & 0x0f) | sample
         self._write_reg(MAX31856.ADDR_CR1, [avg])
+
+    @property
+    def mode(self):
+        [cr0] = self._read_reg(MAX31856.ADDR_CR0, 1)
+        return cr0 >> 7
+
+    @mode.setter
+    def mode(self, mode):
+        [cr0] = self._read_reg(MAX31856.ADDR_CR0, 1)
+        cr0 = (cr0 & 0x7f) | (mode << 7)
+        self._write_reg(MAX31856.ADDR_CR0, [cr0])
 
     def _read_reg(self, addr, size):
         return self._spi.transfer([addr], size)
