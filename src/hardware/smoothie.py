@@ -21,7 +21,7 @@ class Smoothie(object):
         for _ in range(retry_times):
             self._uart.open()
             if self.recv() == 'Smoothie' and self.recv() == 'ok':
-                return True
+                pass
 
             self.send('G')
             if self.recv() != 'ok':
