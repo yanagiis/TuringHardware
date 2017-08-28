@@ -44,10 +44,10 @@ class SWPWM(PWM):
         self._gpio = None
 
     def open(self):
-        self._gpio = GPIO(self._gpio, "out")
+        self._gpio = GPIO(self._gpio_pin, "out")
 
     def close(self):
-        self._gpio = GPIO(self._gpio, "in")
+        self._gpio = GPIO(self._gpio_pin, "in")
 
     @property
     def dutycycle(self):
