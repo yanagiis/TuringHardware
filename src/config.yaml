@@ -2,10 +2,10 @@ hardwares:
 
   - hwspi:
       name: "spi-0"
-      number: 0
+      number: 32766
       chipselect: 0
       speed: 100000
-      mode: 3 # CPOL=1 and CPHA=1
+      mode: 1 # CPOL=1 and CPHA=1
 
   - uart:
       name: "uart-0"
