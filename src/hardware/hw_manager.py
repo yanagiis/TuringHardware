@@ -47,6 +47,7 @@ class HWManager(object):
 
 def create_max31856(hardware_config, hwm, _):
     tc_type = hardware_config['tc_type']
+    sample_avg = hardware_config['sample_avg']
     dev = hardware_config['dev']
 
     config = MAX31856Config()
@@ -70,6 +71,21 @@ def create_max31856(hardware_config, hwm, _):
     else:
         logger.error("Unknown '%s' - tc_type: '%s'", hardware_config['name'],
                      hardware_config['tc_type'])
+        return None
+
+    if sample_avg == 1:
+        config.sample_avg = MAX31856.SAMPLE_AVG_1
+    elif sample_avg == 2:
+        config.sample_avg = MAX31856.SAMPLE_AVG_2
+    elif sample_avg == 4:
+        config.sample_avg = MAX31856.SAMPLE_AVG_4
+    elif sample_avg == 8:
+        config.sample_avg = MAX31856.SAMPLE_AVG_8
+    elif sample_avg == 16:
+        config.sample_avg = MAX31856.SAMPLE_AVG_16
+    else:
+        logger.error("Unsupport '%s' - sample average: '%d'",
+                     hardware_config['name'], hardware_config['sample_avg'])
         return None
 
     spidev = hwm.find_hardware(dev)

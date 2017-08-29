@@ -12,6 +12,7 @@ class MAX31856Error(Exception):
 class MAX31856Config(object):
     def __init__(self):
         self.tc_type = MAX31856.K_TYPE
+        self.sample_avg = MAX31856.SAMPLE_AVG_1
 
 
 class MAX31856(object):
@@ -26,12 +27,11 @@ class MAX31856(object):
     T_TYPE = 0x7
 
 
-class TCSensorError(Exception):
-    def __init__(self, msg):
-        self.message = msg
-
-
-class MAX31856(object):
+    SAMPLE_AVG_1 = 0x0
+    SAMPLE_AVG_2 = 0x1
+    SAMPLE_AVG_4 = 0x2
+    SAMPLE_AVG_8 = 0x3
+    SAMPLE_AVG_16 = 0x4
 
     ADDR_WRITE_MASK = 0x80
 
@@ -67,10 +67,15 @@ class MAX31856(object):
     def connect(self):
         self._spi.open()
         self.tc_type = self._config.tc_type
+        self.sample_avg = self._config.sample_avg
 
         # Check out this sensor is work or not
         if self.tc_type != self._config.tc_type:
             logger.error("max31856 set tc type failed")
+            self._spi.close()
+            return False
+        if self.sample_avg != self._config.sample_avg:
+            logger.error("max31856 set sample average failed")
             self._spi.close()
             return False
 

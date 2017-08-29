@@ -41,6 +41,7 @@ hardwares:
       name: "max31856-0"
       tc_type: "T"
       dev: "spi-0"
+      sample_avg: 1 # 1, 2, 4, 8, 16
 
   - max31865:
       name: "max31865-0"
