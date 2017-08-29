@@ -7,7 +7,7 @@ import signal
 import time
 import yaml
 from hardware.hw_manager import HWManager
-from hardware.max31856 import MAX31856, TC
+from hardware.max31856 import MAX31856
 
 
 def signal_int_handler(*_):
@@ -23,8 +23,10 @@ def main():
     hwm.import_config(loop, configuration['hardwares'])
     max31856 = hwm.find_hardware('max31856-0')
 
-    max31856.connect()
-    max31856.tc_type = TC.T_TYPE
+    if max31856.connect() == False:
+        sys.exit(1)
+
+    max31856.tc_type = MAX31856.T_TYPE
     max31856.mode = MAX31856.MODE_AUTOMATIC
     while True:
         print(max31856.read_measure_temp_c())

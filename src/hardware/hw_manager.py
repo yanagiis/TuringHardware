@@ -3,7 +3,7 @@
 
 from logzero import logger
 from hardware.max31865 import MAX31865
-from hardware.max31856 import MAX31856, TC
+from hardware.max31856 import MAX31856, MAX31856Config
 from hardware.pwm import SWPWM, PWMConfig
 from hardware.smoothie import Smoothie
 from hardware.extruder import Extruder
@@ -49,22 +49,24 @@ def create_max31856(hardware_config, hwm, _):
     tc_type = hardware_config['tc_type']
     dev = hardware_config['dev']
 
+    config = MAX31856Config()
+
     if tc_type == 'B':
-        tc_type = TC.B_TYPE
+        config.tc_type = MAX31856.B_TYPE
     elif tc_type == 'E':
-        tc_type = TC.E_TYPE
+        config.tc_type = MAX31856.E_TYPE
     elif tc_type == 'J':
-        tc_type = TC.J_TYPE
+        config.tc_type = MAX31856.J_TYPE
     elif tc_type == 'K':
-        tc_type = TC.K_TYPE
+        config.tc_type = MAX31856.K_TYPE
     elif tc_type == 'N':
-        tc_type = TC.N_TYPE
+        config.tc_type = MAX31856.N_TYPE
     elif tc_type == 'R':
-        tc_type = TC.R_TYPE
+        config.tc_type = MAX31856.R_TYPE
     elif tc_type == 'S':
-        tc_type = TC.S_TYPE
+        config.tc_type = MAX31856.S_TYPE
     elif tc_type == 'T':
-        tc_type = TC.T_TYPE
+        config.tc_type = MAX31856.T_TYPE
     else:
         logger.error("Unknown '%s' - tc_type: '%s'", hardware_config['name'],
                      hardware_config['tc_type'])
@@ -75,7 +77,7 @@ def create_max31856(hardware_config, hwm, _):
         logger.warning("Cannot find hardware '%s' for now", dev)
         return ValueError("Cannot find hardware '%s' for now" % dev)
 
-    return MAX31856(spidev)
+    return MAX31856(spidev, config)
 
 
 def create_max31865(hardware_config, hwm, _):

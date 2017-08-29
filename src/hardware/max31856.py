@@ -4,7 +4,18 @@
 from logzero import logger
 
 
-class TC(object):
+class MAX31856Error(Exception):
+    def __init__(self, msg):
+        self.message = msg
+
+
+class MAX31856Config(object):
+    def __init__(self):
+        self.tc_type = MAX31856.K_TYPE
+
+
+class MAX31856(object):
+
     B_TYPE = 0x0
     E_TYPE = 0x1
     J_TYPE = 0x2
@@ -41,21 +52,27 @@ class MAX31856(object):
     ADDR_LTCBL = 0xE
     ADDR_SR = 0xF
 
-    MODE_MANUAL = 0
-    MODE_AUTOMATIC = 1
-
     RESOLUTION_TC = 0.0078125
     RESOLUTION_CJ = 0.015625
 
-    def __init__(self, spidev):
+    def __init__(self, spidev, config):
         """
         Args:
             spidev (SPI): max31856 communication interface
+            config (MAX31856Config): max31856 configuration
         """
         self._spi = spidev
+        self._config = config
 
     def connect(self):
         self._spi.open()
+        self.tc_type = self._config.tc_type
+
+        # Check out this sensor is work or not
+        if self.tc_type != self._config.tc_type:
+            logger.error("max31856 set tc type failed")
+            self._spi.close()
+            return False
 
     def disconnect(self):
         self._spi.close()
@@ -65,7 +82,7 @@ class MAX31856(object):
 
         if fault != 0:
             logger.error("MAX31856 get fault: %02x", fault)
-            raise TCSensorError("MAX31856 get fault: %02x" % fault)
+            raise MAX31856Error("MAX31856 get fault: %02x" % fault)
 
         tempc = ((temp0 << 16) | (temp1 << 8) | temp2) >> 5
         if temp0 & 0x80 != 0:
@@ -92,7 +109,7 @@ class MAX31856(object):
         Args:
             tc_type: (TC.TYPE)
         """
-        if not TC.B_TYPE <= tc_type <= TC.T_TYPE:
+        if not MAX31856.B_TYPE <= tc_type <= MAX31856.T_TYPE:
             raise ValueError("arg 'value' should be TC TYPE")
         [cr1] = self._read_reg(MAX31856.ADDR_CR1, 1)
         cr1 = (cr1 & 0xf0) | tc_type
