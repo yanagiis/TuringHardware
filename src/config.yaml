@@ -27,11 +27,11 @@ hardwares:
 
   - swpwm:
       name: "pwm-0"
-      gpio: 1
+      gpio: 7
 
   - swpwm:
       name: "pwm-1"
-      gpio: 2
+      gpio: 10
 
   - max31856:
       name: "max31856-0"
