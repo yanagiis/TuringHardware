@@ -47,6 +47,8 @@ hardwares:
   - max31865:
       name: "max31865-0"
       dev: "spi-1"
+      wire: 3
+      mode: 'automatic' # one-shot or automatic (this field not used for now)
 
   - smoothie:
       name: "smoothie-0"

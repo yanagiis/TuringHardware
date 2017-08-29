@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from logzero import logger
-from hardware.max31865 import MAX31865
+from hardware.max31865 import MAX31865, MAX31865Config
 from hardware.max31856 import MAX31856, MAX31856Config
 from hardware.pwm import SWPWM, PWMConfig
 from hardware.smoothie import Smoothie
@@ -98,12 +98,24 @@ def create_max31856(hardware_config, hwm, _):
 
 def create_max31865(hardware_config, hwm, _):
     dev = hardware_config['dev']
+    wire = hardware_config['wire']
     spidev = hwm.find_hardware(dev)
     if spidev is None:
         logger.warning("Cannot find hardware '%s' for now", dev)
         return None
 
-    return MAX31865(spidev)
+    config = MAX31865Config()
+    if wire == 2:
+        config.wire = MAX31865.WIRE_2
+    elif wire == 3:
+        config.wire = MAX31865.WIRE_3
+    elif wire == 4:
+        config.wire = MAX31865.WIRE_4
+    else:
+        logger.error("Unsupport '%s' wire setting: '%d'",
+                     hardware_config['name'], wire)
+
+    return MAX31865(spidev, config)
 
 
 def create_pwm(hardware_config, _, loop):

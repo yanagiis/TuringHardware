@@ -14,7 +14,20 @@ class MAX31865Error(Exception):
         self.message = msg
 
 
+class MAX31865Config(object):
+    def __init__(self):
+        self.wire = MAX31865.WIRE_2
+        self.mode = MAX31865.MODE_AUTOMATIC
+
+
 class MAX31865(object):
+
+    WIRE_2 = 0
+    WIRE_3 = 1
+    WIRE_4 = 0
+
+    MODE_ONESHOT = 0
+    MODE_AUTOMATIC = 1
 
     ADDR_WRITE_MASK = 0x80
 
@@ -52,12 +65,14 @@ class MAX31865(object):
     CV_B = -5.775E-7
     CV_C = 0
 
-    def __init__(self, spidev):
+    def __init__(self, spidev, config):
         """
         Args:
             spidev (SPI): max31865 communication interface
+            config (MAX31865Config): max31865 configuration
         """
         self._spi = spidev
+        self._config = config
 
     def connect(self):
         """
@@ -65,9 +80,23 @@ class MAX31865(object):
             bool: True if connect success, otherwise return False
         """
         self._spi.open()
+        self.wire = self._config.wire
+        self.mode = self._config.mode
+
+        if self.wire != self._config.wire:
+            logger.error("max31865 set wire failed")
+            self._spi.close()
+            return False
+        if self.mode != self._config.mode:
+            logger.error("max31865 set mode failed")
+            self._spi.close()
+            return False
+
+        self._enable()
         return True
 
     def disconnect(self):
+        self._disable()
         self._spi.close()
 
     def read_measure_temp_c(self):
@@ -78,6 +107,38 @@ class MAX31865(object):
 
         rtd_adc_code = ((rtd_msb << 8) | rtd_lsb) >> 1
         return (rtd_adc_code / 32) - 256
+
+    def _enable(self):
+        [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
+        cr_value = (cr_value & 0x7f) | (1 << 7)
+        self._write_reg(MAX31865.ADDR_CR, [cr_value])
+
+    def _disable(self):
+        [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
+        cr_value = (cr_value & 0x7f)
+        self._write_reg(MAX31865.ADDR_CR, [cr_value])
+
+    @property
+    def mode(self):
+        [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
+        return (cr_value & 0x40) >> 6
+
+    @mode.setter
+    def mode(self, mode):
+        [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
+        cr_value = (cr_value & 0xbf) | (mode << 7)
+        self._write_reg(MAX31865.ADDR_CR, [cr_value])
+
+    @property
+    def wire(self):
+        [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
+        return (cr_value & 0xef) >> 4
+
+    @wire.setter
+    def wire(self, wire):
+        [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
+        cr_value = (cr_value & 0xef) | (wire << 4)
+        self._write_reg(MAX31865.ADDR_CR, [cr_value])
 
     def _read_reg(self, addr, size):
         return self._spi.transfer([addr], size)
