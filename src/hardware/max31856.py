@@ -26,6 +26,8 @@ class MAX31856(object):
     S_TYPE = 0x6
     T_TYPE = 0x7
 
+    MODE_MANUAL = 0
+    MODE_AUTOMATIC = 1
 
     SAMPLE_AVG_1 = 0x0
     SAMPLE_AVG_2 = 0x1
