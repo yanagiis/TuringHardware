@@ -14,9 +14,13 @@ class Smoothie(object):
         self._textproto = TextProto(self._uart, self._uart, 64)
 
     def connect(self, retry_times):
-        """
+        """ Connect to smoothie
+        Try to connect smoothie and check it is worked or not.
+
         Args:
             retry_times (int): retry times for connect to Smoothie board
+        Returns:
+            bool: True if connect success, otherwise return False
         """
         for _ in range(retry_times):
             self._uart.open()

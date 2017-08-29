@@ -67,6 +67,12 @@ class MAX31856(object):
         self._config = config
 
     def connect(self):
+        """ Connect to max31856
+        Try to connect max31856 and check the function is worked or not.
+
+        Returns:
+            bool: True if connect success, otherwise return False
+        """
         self._spi.open()
         self.tc_type = self._config.tc_type
         self.sample_avg = self._config.sample_avg

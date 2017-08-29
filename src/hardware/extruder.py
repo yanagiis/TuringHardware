@@ -13,7 +13,8 @@ class Extruder(object):
         self._textproto = TextProto(self._uart, self._uart, 64)
 
     def connect(self, retry_times):
-        """
+        """ Connect to extruder
+        Try to connect extruder and check the function is worked or not
         Args:
             retry_times (int): retry times for connect to Smoothie board
         """

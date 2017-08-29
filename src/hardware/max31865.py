@@ -58,6 +58,10 @@ class MAX31865(object):
         self._spi = spidev
 
     def connect(self):
+        """
+        Returns:
+            bool: True if connect success, otherwise return False
+        """
         self._spi.open()
         return True
 
