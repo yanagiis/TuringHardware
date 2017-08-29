@@ -41,7 +41,7 @@ hardwares:
       name: "max31856-0"
       tc_type: "T"
       dev: "spi-0"
-      mode: 'automatic' # manual or automatic (this field not used for now)
+      mode: 'automatic' # one-shot or automatic (this field not used for now)
       sample_avg: 1 # 1, 2, 4, 8, 16
 
   - max31865:
