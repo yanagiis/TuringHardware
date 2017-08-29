@@ -9,7 +9,7 @@ class RTD(object):
     RTD_PT1000 = 0x1
 
 
-class RTDSensorError(Exception):
+class MAX31865Error(Exception):
     def __init__(self, msg):
         self.message = msg
 
@@ -72,7 +72,7 @@ class MAX31865(object):
         [rtd_msb, rtd_lsb] = self._read_reg(MAX31865.ADDR_RTDH, 2)
         if rtd_lsb & 0x1 != 0:
             logger.error("MAX31865 get fault")
-            raise RTDSensorError("MAX31865 get fault")
+            raise MAX31865Error("MAX31865 get fault")
 
         rtd_adc_code = ((rtd_msb << 8) | rtd_lsb) >> 1
         return (rtd_adc_code / 32) - 256
