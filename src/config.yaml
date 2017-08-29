@@ -28,14 +28,14 @@ hardwares:
   - swpwm:
       name: "pwm-0"
       gpio: 7
-      dutycycle: 0.5 # 50%
-      frequency: 100 # hz
+      dutycycle: 0 # 0%
+      frequency: 0 # hz
 
   - swpwm:
       name: "pwm-1"
       gpio: 10
-      dutycycle: 0.5 # 50%
-      frequency: 100 # hz
+      dutycycle: 0 # 0%
+      frequency: 0 # hz
 
   - max31856:
       name: "max31856-0"
