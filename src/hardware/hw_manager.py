@@ -4,7 +4,7 @@
 from logzero import logger
 from hardware.max31865 import MAX31865
 from hardware.max31856 import MAX31856, TC
-from hardware.pwm import SWPWM
+from hardware.pwm import SWPWM, PWMConfig
 from hardware.smoothie import Smoothie
 from hardware.extruder import Extruder
 from hardware.spi import HWSPI, SPIConfig
@@ -90,7 +90,10 @@ def create_max31865(hardware_config, hwm, _):
 
 def create_pwm(hardware_config, _, loop):
     gpio_pin = hardware_config['gpio']
-    return SWPWM(gpio_pin, loop)
+    config = PWMConfig()
+    config.dutycycle = hardware_config['dutycycle']
+    config.frequency = hardware_config['frequency']
+    return SWPWM(gpio_pin, config, loop)
 
 
 def create_smoothie(hardware_config, hwm, _):

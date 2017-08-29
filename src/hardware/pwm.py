@@ -26,20 +26,27 @@ class PWM(tio.IO):
         raise NotImplementedError
 
 
+class PWMConfig(object):
+    def __init__(self):
+        self.dutycycle = 0
+        self.frequency = 0
+
+
 class SWPWM(PWM):
     """ Software PWM
     """
 
-    def __init__(self, gpio_pin, loop):
+    def __init__(self, gpio_pin, config, loop):
         """
         Args:
             gpio_pin (int): gpio pin number this PWM used
+            config (PWMConfig): configuration for pwm
             loop (asyncio.loop):
         """
         self._gpio_pin = gpio_pin
         self._loop = loop
-        self._dutycycle = 0
-        self._freq = 0
+        self._dutycycle = config.dutycycle
+        self._freq = config.frequency
         self._stop = 0
         self._gpio = None
 
