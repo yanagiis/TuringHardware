@@ -16,6 +16,8 @@ class MAX31865Error(Exception):
 
 class MAX31865(object):
 
+    ADDR_WRITE_MASK = 0x80
+
     ADDR_CR = 0x0
     ADDR_RTDH = 0x1
     ADDR_RTDL = 0x2
@@ -81,4 +83,4 @@ class MAX31865(object):
         return self._spi.transfer([addr], size)
 
     def _write_reg(self, addr, data):
-        self._spi.transfer([addr] + data, 0)
+        self._spi.transfer([addr | MAX31865.ADDR_WRITE_MASK] + data, 0)
