@@ -59,6 +59,7 @@ class MAX31865(object):
 
     def connect(self):
         self._spi.open()
+        return True
 
     def disconnect(self):
         self._spi.close()

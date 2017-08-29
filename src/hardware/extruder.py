@@ -28,6 +28,7 @@ class Extruder(object):
                 continue
 
             return True
+        return False
 
     def disconnect(self):
         self._uart.close()
