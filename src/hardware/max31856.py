@@ -6,6 +6,7 @@ from logzero import logger
 
 class MAX31856Error(Exception):
     def __init__(self, msg):
+        super(MAX31856Error, self).__init__()
         self.message = msg
 
 
