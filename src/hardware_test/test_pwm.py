@@ -4,10 +4,8 @@
 import sys
 import asyncio
 import signal
-import time
 import yaml
 from hardware.hw_manager import HWManager
-from hardware.max31856 import MAX31856, TC
 
 
 def signal_int_handler(*_):
