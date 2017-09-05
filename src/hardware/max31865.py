@@ -2,16 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from logzero import logger
+from hardware.hardware_error import HardwareError
 
 
 class RTD(object):
     RTD_PT100 = 0x0
     RTD_PT1000 = 0x1
-
-
-class MAX31865Error(Exception):
-    def __init__(self, msg):
-        self.message = msg
 
 
 class MAX31865Config(object):
@@ -103,7 +99,7 @@ class MAX31865(object):
         [rtd_msb, rtd_lsb] = self._read_reg(MAX31865.ADDR_RTDH, 2)
         if rtd_lsb & 0x1 != 0:
             logger.error("MAX31865 get fault")
-            raise MAX31865Error("MAX31865 get fault")
+            raise HardwareError('max31865', 'sensor return fault')
 
         rtd_adc_code = ((rtd_msb << 8) | rtd_lsb) >> 1
         return (rtd_adc_code / 32) - 256

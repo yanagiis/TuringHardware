@@ -2,12 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from logzero import logger
-
-
-class MAX31856Error(Exception):
-    def __init__(self, msg):
-        super(MAX31856Error, self).__init__()
-        self.message = msg
+from hardware.hardware_error import HardwareError
 
 
 class MAX31856Config(object):
@@ -96,7 +91,7 @@ class MAX31856(object):
 
         if fault != 0:
             logger.error("MAX31856 get fault: %02x", fault)
-            raise MAX31856Error("MAX31856 get fault: %02x" % fault)
+            raise HardwareError('max31856', 'error code: %02d' % fault)
 
         tempc = ((temp0 << 16) | (temp1 << 8) | temp2) >> 5
         if temp0 & 0x80 != 0:
