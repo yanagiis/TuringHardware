@@ -3,24 +3,24 @@
 
 
 class PID(object):
-    def __init__(self, kp, ki, kd, upper, lower):
+    def __init__(self, pid_p, pid_i, pid_d, lower, upper):
         """
         Args:
-            kp, ki, kd (float): PID parameters
-            upper (float): upper bound of output value
+            pid_p, pid_i, pid_d (float): PID parameters
             lower (float): lower bound of output value
+            upper (float): upper bound of output value
         """
         self._upper = upper
         self._lower = lower
 
-        self._kp = None
-        self._ki = None
-        self._kd = None
+        self._pid_p = None
+        self._pid_i = None
+        self._pid_d = None
 
         self._iterm = None
         self._last_measure = None
 
-        self.turing(kp, ki, kd)
+        self.turing(pid_p, pid_i, pid_d)
         self.reset()
 
     def compute(self, measure, setpoint, diff_time):
@@ -29,12 +29,12 @@ class PID(object):
 
         error = setpoint - measure
 
-        self._iterm += self._ki * error * diff_time
+        self._iterm += self._pid_i * error * diff_time
         self._iterm = self._limit_value(self._iterm)
 
         dinput = measure - self._last_measure
-        output = self._kp * error + self._iterm - (
-            self._kd * dinput / diff_time)
+        output = self._pid_p * error + self._iterm - (
+            self._pid_d * dinput / diff_time)
         output = self._limit_value(output)
 
         self._last_measure = measure
@@ -50,7 +50,7 @@ class PID(object):
             return self._lower
         return value
 
-    def turing(self, kp, ki, kd):
-        self._kp = kp
-        self._ki = ki
-        self._kd = kd
+    def turing(self, pid_p, pid_i, pid_d):
+        self._pid_p = pid_p
+        self._pid_i = pid_i
+        self._pid_d = pid_d
