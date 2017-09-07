@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from logzero import logger
-from hardware.hardware_error import HardwareError
+from hardware.error import HardwareError
 
 
 class MAX31856Config(object):
