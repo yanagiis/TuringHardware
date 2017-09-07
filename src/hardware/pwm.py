@@ -36,22 +36,20 @@ class SWPWM(PWM):
     """ Software PWM
     """
 
-    def __init__(self, gpio_pin, config, loop):
+    def __init__(self, gpio_pin, config):
         """
         Args:
             gpio_pin (int): gpio pin number this PWM used
             config (PWMConfig): configuration for pwm
-            loop (asyncio.loop):
         """
         self._gpio_pin = gpio_pin
-        self._loop = loop
         self._dutycycle = config.dutycycle
         self._freq = config.frequency
-        self._stop = 0
         self._gpio = None
-        self._lock = asyncio.Lock(loop=loop)
+        self._lock = None
 
     def open(self):
+        self._lock = asyncio.Lock()
         self._gpio = GPIO(self._gpio_pin, "out")
 
     def close(self):
