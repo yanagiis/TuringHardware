@@ -69,6 +69,7 @@ class MAX31856(object):
         Returns:
             bool: True if connect success, otherwise return False
         """
+        logger.info("Connect to max31856")
         self._spi.open()
         self.tc_type = self._config.tc_type
         self.sample_avg = self._config.sample_avg
@@ -84,6 +85,7 @@ class MAX31856(object):
             return False
 
     def disconnect(self):
+        logger.info("Disconnect max31856")
         self._spi.close()
 
     def read_measure_temp_c(self):

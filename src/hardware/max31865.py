@@ -75,6 +75,8 @@ class MAX31865(object):
         Returns:
             bool: True if connect success, otherwise return False
         """
+
+        logger.info("Connect to max31865")
         self._spi.open()
         self.wire = self._config.wire
         self.mode = self._config.mode
@@ -92,6 +94,7 @@ class MAX31865(object):
         return True
 
     def disconnect(self):
+        logger.info("Disconnect max31865")
         self._disable()
         self._spi.close()
 
