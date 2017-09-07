@@ -9,6 +9,7 @@ from hardware.smoothie import Smoothie
 from hardware.extruder import Extruder
 from hardware.spi import HWSPI, SPIConfig
 from hardware.uart import UART, UARTConfig
+from hardware.water_detector import WaterDetector
 
 
 class HWManager(object):
@@ -167,6 +168,11 @@ def create_uart(hardware_config, *_):
     return UART(hardware_config['devpath'], uart_config)
 
 
+def create_water_detector(hardware_config, *_):
+    gpio_pin = hardware_config['gpio']
+    return WaterDetector(gpio_pin)
+
+
 HARDWARE_MAPPING = {
     "max31856": create_max31856,
     "max31865": create_max31865,
@@ -174,5 +180,6 @@ HARDWARE_MAPPING = {
     "smoothie": create_smoothie,
     "extruder": create_extruder,
     "hwspi": create_hwspi,
-    "uart": create_uart
+    "uart": create_uart,
+    "water_detector": create_water_detector
 }

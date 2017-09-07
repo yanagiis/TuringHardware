@@ -58,6 +58,10 @@ hardwares:
       name: "extruder-0"
       dev: "tcpuart-0"
 
+  - water_detector:
+      name: "water-detector-0"
+      gpio: 11
+
 services:
 
   output_sensor:
