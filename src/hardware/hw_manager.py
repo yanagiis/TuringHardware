@@ -19,10 +19,9 @@ class HWManager(object):
     def __init__(self):
         self._hardwares = {}
 
-    def import_config(self, loop, configs):
+    def import_config(self, configs):
         """
         Args:
-            loop (asyncio.loop): used by hardware
             configs (dict): hardware configuration
         """
         for config in configs:
@@ -31,7 +30,7 @@ class HWManager(object):
                 logger.error("Cannot resolve '%s' type", hardware_type)
                 continue
             driver = HARDWARE_MAPPING[hardware_type](config[hardware_type],
-                                                     self, loop)
+                                                     self)
 
             name = config[hardware_type]['name']
             if driver is not None:
@@ -46,7 +45,7 @@ class HWManager(object):
         return self._hardwares[name]
 
 
-def create_max31856(hardware_config, hwm, _):
+def create_max31856(hardware_config, hwm):
     tc_type = hardware_config['tc_type']
     sample_avg = hardware_config['sample_avg']
     dev = hardware_config['dev']
@@ -97,7 +96,7 @@ def create_max31856(hardware_config, hwm, _):
     return MAX31856(spidev, config)
 
 
-def create_max31865(hardware_config, hwm, _):
+def create_max31865(hardware_config, hwm):
     dev = hardware_config['dev']
     wire = hardware_config['wire']
     spidev = hwm.find_hardware(dev)
@@ -119,15 +118,15 @@ def create_max31865(hardware_config, hwm, _):
     return MAX31865(spidev, config)
 
 
-def create_pwm(hardware_config, _, loop):
+def create_pwm(hardware_config, _):
     gpio_pin = hardware_config['gpio']
     config = PWMConfig()
     config.dutycycle = hardware_config['dutycycle']
     config.frequency = hardware_config['frequency']
-    return SWPWM(gpio_pin, config, loop)
+    return SWPWM(gpio_pin, config)
 
 
-def create_smoothie(hardware_config, hwm, _):
+def create_smoothie(hardware_config, hwm):
     dev = hardware_config['dev']
     uartdev = hwm.find_hardware(dev)
     if uartdev is None:
@@ -138,7 +137,7 @@ def create_smoothie(hardware_config, hwm, _):
     return Smoothie(uartdev)
 
 
-def create_extruder(hardware_config, hwm, _):
+def create_extruder(hardware_config, hwm):
     dev = hardware_config['dev']
     uartdev = hwm.find_hardware(dev)
     if uartdev is None:
@@ -149,7 +148,7 @@ def create_extruder(hardware_config, hwm, _):
     return Extruder(uartdev)
 
 
-def create_hwspi(hardware_config, *_):
+def create_hwspi(hardware_config, _):
     spi_config = SPIConfig()
     spi_config.speed = hardware_config['speed']
     spi_config.mode = hardware_config['mode']
@@ -158,7 +157,7 @@ def create_hwspi(hardware_config, *_):
     return HWSPI(number, chipselect, spi_config)
 
 
-def create_uart(hardware_config, *_):
+def create_uart(hardware_config, _):
     uart_config = UARTConfig()
     uart_config.baudrate = hardware_config['baudrate']
     uart_config.rtscts = hardware_config['rtscts']
