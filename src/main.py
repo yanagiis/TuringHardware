@@ -2,14 +2,20 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
+import argparse
 import yaml
 from hardware.hw_manager import HWManager
 
 
 def main():
-    loop = asyncio.get_event_loop()
 
-    with open('config.yaml', 'r') as file:
+    parser = argparse.ArgumentParser(description="Turing hardware")
+    parser.add_argument(
+        'configuration', help='Turing hardware and service configuraiton')
+    args = parser.parse_args()
+
+    loop = asyncio.get_event_loop()
+    with open(args.configuration, 'r') as file:
         configuration = yaml.load(file.read())
 
     hwm = HWManager()
