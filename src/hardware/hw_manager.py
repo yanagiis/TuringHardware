@@ -37,7 +37,7 @@ class HWManager(object):
                 logger.info("Create hardware instance '%s'", name)
                 self._hardwares[name] = driver
             else:
-                logger.info("Cannot create hardware instance '%s'", name)
+                logger.warning("Cannot create hardware instance '%s'", name)
 
     def find_hardware(self, name):
         if name not in self._hardwares:
@@ -101,7 +101,8 @@ def create_max31865(hardware_config, hwm):
     wire = hardware_config['wire']
     spidev = hwm.find_hardware(dev)
     if spidev is None:
-        logger.warning("Cannot find hardware '%s' for now", dev)
+        logger.warning("Cannot find hardware '%s' for '%s'", dev,
+                       hardware_config['name'])
         return None
 
     config = MAX31865Config()
