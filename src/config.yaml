@@ -62,6 +62,22 @@ hardwares:
       name: "water-detector-0"
       gpio: 11
 
+  - pid:
+      name: "pid-0"
+      P: 2
+      I: 0.25
+      D: 1
+      lower: 0
+      upper: 100
+
+  - pid:
+      name: "pid-1"
+      P: 2
+      I: 0.5
+      D: 2
+      lower: 0
+      upper: 100
+
 services:
 
   output_sensor:

@@ -10,6 +10,7 @@ from hardware.extruder import Extruder
 from hardware.spi import HWSPI, SPIConfig
 from hardware.uart import UART, UARTConfig
 from hardware.water_detector import WaterDetector
+from hardware.pid import PID
 
 
 class HWManager(object):
@@ -168,9 +169,18 @@ def create_uart(hardware_config, _):
     return UART(hardware_config['devpath'], uart_config)
 
 
-def create_water_detector(hardware_config, *_):
+def create_water_detector(hardware_config, _):
     gpio_pin = hardware_config['gpio']
     return WaterDetector(gpio_pin)
+
+
+def create_pid(hardware_config, _):
+    pid_p = hardware_config['P']
+    pid_i = hardware_config['I']
+    pid_d = hardware_config['D']
+    lower = hardware_config['lower']
+    upper = hardware_config['upper']
+    return PID(pid_p, pid_i, pid_d, lower, upper)
 
 
 HARDWARE_MAPPING = {
@@ -181,5 +191,6 @@ HARDWARE_MAPPING = {
     "extruder": create_extruder,
     "hwspi": create_hwspi,
     "uart": create_uart,
-    "water_detector": create_water_detector
+    "water_detector": create_water_detector,
+    "pid": create_pid
 }
