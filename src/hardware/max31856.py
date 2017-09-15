@@ -61,6 +61,7 @@ class MAX31856(object):
         """
         self._spi = spidev
         self._config = config
+        self._is_connected = False
 
     def connect(self):
         """ Connect to max31856
@@ -84,11 +85,19 @@ class MAX31856(object):
             self._spi.close()
             return False
 
+        self._is_connected = True
+        return True
+
     def disconnect(self):
         logger.info("Disconnect max31856")
         self._spi.close()
+        sel._is_connected = False
 
     def read_measure_temp_c(self):
+        if not self._is_connected:
+            logger.error("max31856 is not connected")
+            raise HardwareError('max31856', 'is not connected')
+
         [temp0, temp1, temp2, fault] = self._read_reg(MAX31856.ADDR_LTCBH, 4)
 
         if fault != 0:
@@ -149,7 +158,11 @@ class MAX31856(object):
         self._write_reg(MAX31856.ADDR_CR0, [cr0])
 
     def _read_reg(self, addr, size):
+        if not self._is_connected:
+            raise Hardware('max31856', 'is not connected')
         return self._spi.transfer([addr], size)
 
     def _write_reg(self, addr, data):
+        if not self._is_connected:
+            raise Hardware('max31856', 'is not connected')
         self._spi.transfer([addr | MAX31856.ADDR_WRITE_MASK] + data, 0)
