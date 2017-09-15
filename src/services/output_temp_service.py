@@ -35,7 +35,8 @@ class OutputTempService(object):
                 self._error_count += 1
                 self._sensor.disconnect()
                 await asyncio.sleep(0.1)
-                self._bus.pub('output.temperature', {
+                self._sensor.connect()
+                await self._bus.pub('output.temperature', {
                     "status":
                     "error",
                     "message":

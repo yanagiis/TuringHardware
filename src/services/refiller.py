@@ -13,7 +13,7 @@ class Refiller(object):
         self._bus = bus
 
     async def start(self):
-        self._bus.req_rep('tank.refiller', self.refiller_callback)
+        await self._bus.reg_rep('tank.refiller', self.refiller_callback)
 
     async def stop(self):
         await self._stop_pwm()

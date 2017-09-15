@@ -25,7 +25,8 @@ class TankWaterService(object):
                 is_water_full = self._sensor.is_water_full()
                 if is_water_full != self._is_water_full:
                     self._is_water_full = is_water_full
-                    self._bus.pub('tank.water', {"water": self._is_water_full})
+                    await self._bus.pub('tank.water',
+                                        {"water": self._is_water_full})
                 await asyncio.sleep(float(self._interval) / 1000)
             except asyncio.CancelledError:
                 logger.info("Tank water service shutdown")
