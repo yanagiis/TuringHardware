@@ -29,6 +29,7 @@ async def main():
 
     svm = ServiceManager()
     svm.import_config(configuration['services'], hwm, bus)
+    svm.start_all_services()
 
     while True:
         await bus.pub('hello.world', b"helloworld")

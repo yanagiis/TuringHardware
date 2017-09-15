@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import asyncio
 from logzero import logger
 from services.output_temp_service import OutputTempService
 from services.tank_temp_service import TankTempService
@@ -52,6 +53,11 @@ class ServiceManager(object):
         if name not in self._services:
             return None
         return self._services[name]
+
+    def start_all_services(self):
+        loop = asyncio.get_event_loop()
+        for _, service in self._services.items():
+            loop.create_task(service.start())
 
 
 def create_output_temp_service(service_config, hwmanager, bus):
