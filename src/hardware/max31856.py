@@ -120,7 +120,7 @@ class MAX31856(object):
 
     @property
     def tc_type(self):
-        cr1 = self._read_reg(MAX31856.ADDR_CR1, 1)
+        [cr1] = self._read_reg(MAX31856.ADDR_CR1, 1)
         return cr1 & 0x7
 
     @tc_type.setter
@@ -137,7 +137,7 @@ class MAX31856(object):
 
     @property
     def sample_avg(self):
-        avg = self._read_reg(MAX31856.ADDR_CR1, 1)
+        [avg] = self._read_reg(MAX31856.ADDR_CR1, 1)
         return avg >> 4
 
     @sample_avg.setter
