@@ -80,30 +80,31 @@ hardwares:
 
 services:
 
-  output_sensor:
-    enable: true
-    scan_interval_ms: 1000
-    dev: "max31856-0"
+  - output_temp_service:
+      enable: true
+      scan_interval_ms: 1000
+      dev: "max31856-0"
 
-  tank_sensor:
-    enable: true
-    scan_interval_ms: 1000
-    dev: "max31865-0"
+  - tank_temp_service:
+      enable: true
+      scan_interval_ms: 1000
+      dev: "max31865-0"
 
-  heater:
-    enable: true
-    scan_interval_ms: 1000
-    dev: "pwm-0"
-    P: 2
-    I: 0.25
-    D: 1
+  - tank_water_service:
+      enable: true
+      scan_interval_ms: 1000
+      dev: "water-detector-0"
 
-  refiller:
-    enable: true
-    scan_interval_ms: 1000
-    dev: "pwm-1"
+  - refiller:
+      enable: true
+      dev: "pwm-1"
 
-  brewer:
-    enable: true
-    moving_dev: "smoothie-0"
-    extrude_dev: "extruder-0"
+  - heater:
+      enable: true
+      dev: "pwm-0"
+
+  - brewer:
+      enable: true
+      moving_dev: "smoothie-0"
+      extrude_dev: "extruder-0"
+      pid_dev: "pid-1"
