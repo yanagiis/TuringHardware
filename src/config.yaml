@@ -108,3 +108,7 @@ services:
       moving_dev: "smoothie-0"
       extrude_dev: "extruder-0"
       pid_dev: "pid-1"
+
+bus:
+  host: "alarm"
+  port: 4222

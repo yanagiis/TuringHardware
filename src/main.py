@@ -23,9 +23,9 @@ async def main():
     hwm = HWManager()
     hwm.import_config(configuration['hardwares'])
 
-    evloop = asyncio.get_event_loop()
-    bus = NatsBus('localhost', 4222)
-    evloop.create_task(bus.start())
+    bus_config = configuration['bus']
+    bus = NatsBus(bus_config['host'], bus_config['port'])
+    await bus.start()
 
     svm = ServiceManager()
     svm.import_config(configuration['services'], hwm, bus)
