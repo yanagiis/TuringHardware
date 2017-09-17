@@ -37,8 +37,8 @@ class Refiller(object):
     def _is_pwm_stop(self):
         return True if self._pwm_task is not None else False
 
-    async def refiller_callback(self, msg):
-        cmd = msg.data.decode()
+    async def refiller_callback(self, msg, data):
+        cmd = data['command']
         if cmd == 'get':
             await self._bus.pub(msg.reply, self._status())
             return
