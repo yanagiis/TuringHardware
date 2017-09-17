@@ -158,11 +158,7 @@ class MAX31856(object):
         self._write_reg(MAX31856.ADDR_CR0, [cr0])
 
     def _read_reg(self, addr, size):
-        if not self._is_connected:
-            raise Hardware('max31856', 'is not connected')
         return self._spi.transfer([addr], size)
 
     def _write_reg(self, addr, data):
-        if not self._is_connected:
-            raise Hardware('max31856', 'is not connected')
-        self._spi.transfer([addr | MAX31856.ADDR_WRITE_MASK] + data, 0)
+        return self._spi.transfer([addr | MAX31856.ADDR_WRITE_MASK] + data, 0)
