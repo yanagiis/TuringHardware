@@ -34,8 +34,8 @@ class NatsBus(object):
     async def req(self, path, payload, timeout=1):
         if not self._nats_client.is_connected:
             return None
-        return await self._nats_client.request(
-            path, json.dumps(payload).encode('utf-8'))
+        return await self._nats_client.timed_request(
+            path, json.dumps(payload).encode('utf-8'), timeout)
 
     async def reg_rep(self, path, callback):
         return await self.reg_sub(path, callback)
