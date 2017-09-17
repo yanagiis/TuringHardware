@@ -138,13 +138,13 @@ class MAX31865(object):
     @mode.setter
     def mode(self, mode):
         [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
-        cr_value = (cr_value & 0xbf) | (mode << 7)
+        cr_value = (cr_value & 0xbf) | (mode << 6)
         self._write_reg(MAX31865.ADDR_CR, [cr_value])
 
     @property
     def wire(self):
         [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
-        return (cr_value & 0xef) >> 4
+        return (cr_value & 0x10) >> 4
 
     @wire.setter
     def wire(self, wire):
