@@ -34,6 +34,7 @@ class TankTempService(object):
                 self._error_count += 1
                 self._sensor.disconnect()
                 asyncio.sleep(0.1)
+                self._sensor.connect()
                 self._bus.pub('tank.temperature', {
                     "status":
                     "error",
