@@ -74,6 +74,7 @@ class MAX31856(object):
         self._spi.open()
         self.tc_type = self._config.tc_type
         self.sample_avg = self._config.sample_avg
+        self.mode = MAX31856.MODE_AUTOMATIC
 
         # Check out this sensor is work or not
         if self.tc_type != self._config.tc_type:
