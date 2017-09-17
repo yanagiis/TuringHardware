@@ -20,7 +20,7 @@ class OutputTempService(object):
         self._tempc = None
 
     async def start(self):
-
+        self._sensor.connect()
         while True:
             try:
                 tempc = self._sensor.read_measure_temp_c()

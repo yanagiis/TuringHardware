@@ -22,29 +22,25 @@ class TankTempService(object):
 
     async def start(self):
         self._sensor.connect()
-
         while True:
             try:
-                try:
-                    tempc = self._sensor.read_measure_temp_c()
-                    self._tempc_available = True
-                    self._bus.pub('tank.temperature',
-                                  {"status": "ok",
-                                   "temperature": tempc})
-                except HardwareError as error:
-                    self._tempc_available = False
-                    self._error_count += 1
-                    self._sensor.disconnect()
-                    asyncio.sleep(0.1)
-                    self._bus.pub('tank.temperature', {
-                        "status":
-                        "error",
-                        "message":
-                        "output sensor '%s' got error: '%s'" % (error.name,
-                                                                error.message)
-                    })
-                await asyncio.sleep(float(self._interval) / 1000)
-            except asyncio.CancelledError:
-                logger.info("Tank temperature service shutdown")
+                tempc = self._sensor.read_measure_temp_c()
+                self._tempc_available = True
+                self._bus.pub('tank.temperature',
+                              {"status": "ok",
+                               "temperature": tempc})
+            except HardwareError as error:
+                self._tempc_available = False
+                self._error_count += 1
+                self._sensor.disconnect()
+                asyncio.sleep(0.1)
+                self._bus.pub('tank.temperature', {
+                    "status":
+                    "error",
+                    "message":
+                    "output sensor '%s' got error: '%s'" % (error.name,
+                                                            error.message)
+                })
+            await asyncio.sleep(float(self._interval) / 1000)
 
         self._sensor.disconnect()
