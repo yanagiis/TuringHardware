@@ -38,6 +38,7 @@ class ServiceManager(object):
 
             if config[service_name]['enable'] is not True:
                 logger.info("Service '%s' is disabled'", service_name)
+                continue
 
             service = SERVICE_MAPPING[service_name](config[service_name],
                                                     hwmanager, bus)
