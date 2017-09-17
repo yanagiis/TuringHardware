@@ -6,7 +6,7 @@ class Bus(object):
     async def start(self):
         raise NotImplementedError()
 
-    async def req(self, path):
+    async def req(self, path, timeout):
         raise NotImplementedError()
 
     async def reg_rep(self, path, callback):

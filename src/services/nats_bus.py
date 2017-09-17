@@ -25,7 +25,7 @@ class NatsBus(object):
                 logger.error("Cannot connect to nats server '%s'", self._url)
         logger.info("Connect to nats server '%s' successfully", self._url)
 
-    async def req(self, path, payload):
+    async def req(self, path, payload, timeout=1):
         if not self._nats_client.is_connected:
             return None
         return await self._nats_client.request(
