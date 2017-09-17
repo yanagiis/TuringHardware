@@ -97,8 +97,9 @@ class MAX31865(object):
 
     def disconnect(self):
         logger.info("Disconnect max31865")
-        self._disable()
-        self._spi.close()
+        if self._is_connected:
+            self._disable()
+            self._spi.close()
         self._is_connected = False
 
     def read_measure_temp_c(self):
