@@ -109,6 +109,10 @@ class MAX31856(object):
         if temp0 & 0x80 != 0:
             tempc -= 0x80000
 
+        if tempc == 0:
+            logger.error("MAX31856 get zero value")
+            raise HardwareError('max31856', 'get zero value' % fault)
+
         return tempc * MAX31856.RESOLUTION_TC
 
     def read_coldjunction_temp_c(self):
