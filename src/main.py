@@ -32,7 +32,6 @@ async def main():
     svm.start_all_services()
 
     while True:
-        await bus.pub('hello.world', b"helloworld")
         await asyncio.sleep(1)
 
 
