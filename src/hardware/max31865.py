@@ -113,6 +113,11 @@ class MAX31865(object):
             raise HardwareError('max31865', 'sensor return fault')
 
         rtd_adc_code = ((rtd_msb << 8) | rtd_lsb) >> 1
+
+        if rtd_adc_code == 0:
+            logger.error("max31865 get zero value")
+            raise HardwareError('max31865', 'get zero value')
+
         return (rtd_adc_code / 32) - 256
 
     def _enable(self):
