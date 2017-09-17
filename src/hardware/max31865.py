@@ -69,6 +69,7 @@ class MAX31865(object):
         """
         self._spi = spidev
         self._config = config
+        self._is_connected = False
 
     def connect(self):
         """
@@ -91,14 +92,20 @@ class MAX31865(object):
             return False
 
         self._enable()
+        self._is_connected = True
         return True
 
     def disconnect(self):
         logger.info("Disconnect max31865")
         self._disable()
         self._spi.close()
+        self._is_connected = False
 
     def read_measure_temp_c(self):
+        if not self._is_connected:
+            logger.error("max31865 is not connected")
+            raise HardwareError('max31865', 'is not connected')
+
         [rtd_msb, rtd_lsb] = self._read_reg(MAX31865.ADDR_RTDH, 2)
         if rtd_lsb & 0x1 != 0:
             logger.error("MAX31865 get fault")
