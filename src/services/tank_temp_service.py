@@ -26,16 +26,16 @@ class TankTempService(object):
             try:
                 tempc = self._sensor.read_measure_temp_c()
                 self._tempc_available = True
-                self._bus.pub('tank.temperature',
-                              {"status": "ok",
-                               "temperature": tempc})
+                await self._bus.pub('tank.temperature',
+                                    {"status": "ok",
+                                     "temperature": tempc})
             except HardwareError as error:
                 self._tempc_available = False
                 self._error_count += 1
                 self._sensor.disconnect()
                 asyncio.sleep(0.1)
                 self._sensor.connect()
-                self._bus.pub('tank.temperature', {
+                await self._bus.pub('tank.temperature', {
                     "status":
                     "error",
                     "message":

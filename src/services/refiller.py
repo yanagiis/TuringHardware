@@ -40,18 +40,18 @@ class Refiller(object):
     async def refiller_callback(self, msg):
         cmd = msg.data.decode()
         if cmd == 'get':
-            self._bus.pub(msg.reply, self._status())
+            await self._bus.pub(msg.reply, self._status())
             return
         elif cmd == 'start':
             await self._start_pwm()
-            self._bus.pub(msg.reply, self._status())
+            await self._bus.pub(msg.reply, self._status())
             return
         elif cmd == 'stop':
             await self._stop_pwm()
-            self._bus.pub(msg.reply, self._status())
+            await self._bus.pub(msg.reply, self._status())
             return
 
-        self._bus.pub(msg.reply, {
+        await self._bus.pub(msg.reply, {
             "success": False,
             "message": "Unknown command '%s'" % cmd
         })
