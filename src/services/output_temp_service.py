@@ -25,7 +25,7 @@ class OutputTempService(object):
             try:
                 tempc = self._sensor.read_measure_temp_c()
                 self._tempc = tempc
-                self._bus.pub('output.temperature', {
+                await self._bus.pub('output.temperature', {
                     "status": "ok",
                     "temperature": tempc,
                     "error_count": self._error_count
