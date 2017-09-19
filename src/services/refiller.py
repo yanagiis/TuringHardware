@@ -35,7 +35,7 @@ class Refiller(object):
         self._pwm_task = None
 
     def _is_pwm_stop(self):
-        return True if self._pwm_task is not None else False
+        return False if self._pwm_task is not None else True
 
     async def refiller_callback(self, data):
         cmd = data['command']
