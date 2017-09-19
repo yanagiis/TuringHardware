@@ -19,29 +19,34 @@ class OutputTempService(object):
         self._error_count = 0
         self._tempc = None
 
-    async def start(self):
-        self._sensor.connect()
-        while True:
-            try:
-                tempc = self._sensor.read_measure_temp_c()
-                self._tempc = tempc
-                await self._bus.pub('output.temperature', {
-                    "status": "ok",
-                    "temperature": tempc,
-                    "error_count": self._error_count
-                })
-            except HardwareError as error:
-                self._error_count += 1
-                self._sensor.disconnect()
-                await asyncio.sleep(0.1)
-                self._sensor.connect()
-                await self._bus.pub('output.temperature', {
-                    "status":
-                    "error",
-                    "message":
-                    "output sensor '%s' got error: '%s'" % (error.name,
-                                                            error.message)
-                })
-            await asyncio.sleep(float(self._interval) / 1000)
+    async def pub_output_water_temperature(self):
+        if not self._sensor.is_connected() and not self._sensor.connect():
+            await self._bus.pub('output.temperature', {
+                "status": "error",
+                "message": "Cannot connect to sensor"
+            })
+            return
 
-        self._sensor.disconnect()
+        try:
+            tempc = self._sensor.read_measure_temp_c()
+            self._tempc = tempc
+            await self._bus.pub('output.temperature', {
+                "status": "ok",
+                "temperature": tempc,
+                "error_count": self._error_count
+            })
+        except HardwareError as error:
+            self._error_count += 1
+            self._sensor.disconnect()
+            await self._bus.pub('output.temperature', {
+                "status":
+                "error",
+                "message":
+                "output sensor '%s' got error: '%s'" % (error.name,
+                                                        error.message)
+            })
+
+    async def start(self):
+        while True:
+            self.pub_output_water_temperature()
+            await asyncio.sleep(float(self._interval) / 1000)

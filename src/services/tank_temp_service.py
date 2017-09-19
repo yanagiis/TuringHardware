@@ -20,28 +20,33 @@ class TankTempService(object):
         self._tempc_available = False
         self._bus = bus
 
-    async def start(self):
-        self._sensor.connect()
-        while True:
-            try:
-                tempc = self._sensor.read_measure_temp_c()
-                self._tempc_available = True
-                await self._bus.pub('tank.temperature',
-                                    {"status": "ok",
-                                     "temperature": tempc})
-            except HardwareError as error:
-                self._tempc_available = False
-                self._error_count += 1
-                self._sensor.disconnect()
-                asyncio.sleep(0.1)
-                self._sensor.connect()
-                await self._bus.pub('tank.temperature', {
-                    "status":
-                    "error",
-                    "message":
-                    "output sensor '%s' got error: '%s'" % (error.name,
-                                                            error.message)
-                })
-            await asyncio.sleep(float(self._interval) / 1000)
+    async def pub_tank_temperature(self):
+        if not self._sensor.is_connected() and not self._sensor.connect():
+            await self._bus.pub('tank.temperature', {
+                "status": "error",
+                "message": "Cannot connect to sensor"
+            })
+            return
 
-        self._sensor.disconnect()
+        try:
+            tempc = self._sensor.read_measure_temp_c()
+            self._tempc_available = True
+            await self._bus.pub('tank.temperature',
+                                {"status": "ok",
+                                 "temperature": tempc})
+        except HardwareError as error:
+            self._tempc_available = False
+            self._error_count += 1
+            self._sensor.disconnect()
+            await self._bus.pub('tank.temperature', {
+                "status":
+                "error",
+                "message":
+                "output sensor '%s' got error: '%s'" % (error.name,
+                                                        error.message)
+            })
+
+    async def start(self):
+        while True:
+            self.pub_tank_temperature()
+            await asyncio.sleep(float(self._interval) / 1000)

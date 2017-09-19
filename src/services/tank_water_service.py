@@ -17,18 +17,20 @@ class TankWaterService(object):
         self._interval = scan_interval_ms
         self._bus = bus
 
+    async def pub_water_full(self):
+        if not self._sensor.is_connected() and not self._sensor.connect():
+            await self._bus.pub('tank.water', {
+                "status": "error",
+                "message": "Cannot connect to sensor"
+            })
+            return
+
+        is_water_full = self._sensor.is_water_full()
+        if is_water_full != self._is_water_full:
+            self._is_water_full = is_water_full
+            await self._bus.pub('tank.water', {"water": self._is_water_full})
+
     async def start(self):
-        self._sensor.connect()
-
         while True:
-            try:
-                is_water_full = self._sensor.is_water_full()
-                if is_water_full != self._is_water_full:
-                    self._is_water_full = is_water_full
-                    await self._bus.pub('tank.water',
-                                        {"water": self._is_water_full})
-                await asyncio.sleep(float(self._interval) / 1000)
-            except asyncio.CancelledError:
-                logger.info("Tank water service shutdown")
-
-        self._sensor.disconnect()
+            self.pub_water_full()
+            await asyncio.sleep(float(self._interval) / 1000)
