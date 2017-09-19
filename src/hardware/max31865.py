@@ -3,6 +3,7 @@
 
 from logzero import logger
 from hardware.error import HardwareError
+from hardware.sensor import Sensor
 
 
 class RTD(object):
@@ -16,7 +17,7 @@ class MAX31865Config(object):
         self.mode = MAX31865.MODE_AUTOMATIC
 
 
-class MAX31865(object):
+class MAX31865(Sensor):
 
     WIRE_2 = 0
     WIRE_3 = 1
@@ -77,6 +78,9 @@ class MAX31865(object):
             bool: True if connect success, otherwise return False
         """
 
+        if self.is_connected():
+            return True
+
         logger.info("Connect to max31865")
         self._spi.open()
         self.wire = self._config.wire
@@ -97,13 +101,16 @@ class MAX31865(object):
 
     def disconnect(self):
         logger.info("Disconnect max31865")
-        if self._is_connected:
+        if self.is_connected():
             self._disable()
             self._spi.close()
         self._is_connected = False
 
+    def is_connected(self):
+        return self._is_connected
+
     def read_measure_temp_c(self):
-        if not self._is_connected:
+        if not self.is_connected():
             logger.error("max31865 is not connected")
             raise HardwareError('max31865', 'is not connected')
 

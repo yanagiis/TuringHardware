@@ -3,6 +3,7 @@
 
 from logzero import logger
 from hardware.error import HardwareError
+from hardware.sensor import Sensor
 
 
 class MAX31856Config(object):
@@ -11,7 +12,7 @@ class MAX31856Config(object):
         self.sample_avg = MAX31856.SAMPLE_AVG_1
 
 
-class MAX31856(object):
+class MAX31856(Sensor):
 
     B_TYPE = 0x0
     E_TYPE = 0x1
@@ -70,6 +71,9 @@ class MAX31856(object):
         Returns:
             bool: True if connect success, otherwise return False
         """
+        if self.is_connected():
+            return True
+
         logger.info("Connect to max31856")
         self._spi.open()
         self.tc_type = self._config.tc_type
@@ -90,12 +94,19 @@ class MAX31856(object):
         return True
 
     def disconnect(self):
+        if not self.is_connected():
+            return True
+
         logger.info("Disconnect max31856")
         self._spi.close()
         self._is_connected = False
+        return True
+
+    def is_connected(self):
+        return self._is_connected
 
     def read_measure_temp_c(self):
-        if not self._is_connected:
+        if not self.is_connected():
             logger.error("max31856 is not connected")
             raise HardwareError('max31856', 'is not connected')
 
