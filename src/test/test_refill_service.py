@@ -5,7 +5,7 @@ import pytest
 import asyncio
 from test.mock.pwm import MockPWM
 from test.mock.bus import MockBus
-from services.refiller import Refiller
+from services.refill_service import RefillService
 
 
 def test_refiller_start():
@@ -28,7 +28,7 @@ def test_refiller_start():
     bus.reg_sub_cb = _reg_sub_cb
 
     pwm = MockPWM()
-    refiller = Refiller(pwm, bus)
+    refiller = RefillService(pwm, bus)
     asyncio.get_event_loop().run_until_complete(refiller.start())
 
 
@@ -56,16 +56,16 @@ async def test_refiller_command():
     pwm.duty_cycle = 50
     pwm.frequency = 51
 
-    refiller = Refiller(pwm, bus)
+    service = RefillService(pwm, bus)
 
-    response = await refiller.refiller_callback({'command': 'get'})
+    response = await service.command_callback({'command': 'get'})
     assert response['status'] == 'ok'
     assert response['stop'] is True
 
-    response = await refiller.refiller_callback({'command': 'put'})
+    response = await service.command_callback({'command': 'put'})
     assert response['status'] == 'error'
 
-    response = await refiller.refiller_callback({'command': 'start'})
+    response = await service.command_callback({'command': 'start'})
     assert response['status'] == 'ok'
     assert response['stop'] is False
     assert pwm._open is True

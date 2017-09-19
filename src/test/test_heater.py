@@ -61,10 +61,10 @@ async def test_heater_command():
 
     heater = Heater(pwm, bus)
 
-    response = await heater.heater_callback({'command': 'get'})
+    response = await heater.command_callback({'command': 'get'})
     assert response['status'] == 'ok'
     assert response['duty_cycle'] == 50
     assert response['frequency'] == 51
 
-    response = await heater.heater_callback({'command': 'put'})
+    response = await heater.command_callback({'command': 'put'})
     assert response['status'] == 'error'

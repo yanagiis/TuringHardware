@@ -6,7 +6,7 @@ from logzero import logger
 from services.output_temp_service import OutputTempService
 from services.tank_temp_service import TankTempService
 from services.tank_water_service import TankWaterService
-from services.refiller import Refiller
+from services.refill_service import RefillService
 from services.heater import Heater
 
 
@@ -103,17 +103,17 @@ def create_tank_water_service(service_config, hwmanager, bus):
     return TankWaterService(hardware, scan_interval_ms, bus)
 
 
-def create_refiller_service(service_config, hwmanager, bus):
+def create_refill_service(service_config, hwmanager, bus):
     """
     Args:
-        service_config(dict): refiller service configuration
+        service_config(dict): refill service configuration
     """
     dev = service_config['dev']
     hardware = hwmanager.find_hardware(dev)
     if hardware is None:
-        logger.error("Cannot get dev '%s' in refiller service", dev)
+        logger.error("Cannot get dev '%s' in refill service", dev)
         return None
-    return Refiller(hardware, bus)
+    return RefillService(hardware, bus)
 
 
 def create_heater_service(service_config, hwmanager, bus):
@@ -133,6 +133,6 @@ SERVICE_MAPPING = {
     "output_temp_service": create_output_temp_service,
     "tank_temp_service": create_tank_temp_service,
     "tank_water_service": create_tank_water_service,
-    "refiller": create_refiller_service,
+    "refill": create_refill_service,
     "heater": create_heater_service
 }

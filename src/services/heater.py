@@ -16,7 +16,7 @@ class Heater(object):
         self._pwm.open()
         self._pwm_task = asyncio.get_event_loop().create_task(
             self._pwm.start())
-        await self._bus.reg_rep('tank.heater', self.heater_callback)
+        await self._bus.reg_rep('tank.heater', self.command_callback)
         logger.info("start heating water")
 
     async def stop(self):
@@ -25,7 +25,7 @@ class Heater(object):
         self._pwm.close()
         logger.info("stop heating water")
 
-    async def heater_callback(self, data):
+    async def command_callback(self, data):
         cmd = data['command']
         if cmd == 'get':
             return {

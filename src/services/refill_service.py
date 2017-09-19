@@ -5,15 +5,15 @@ import asyncio
 from logzero import logger
 
 
-class Refiller(object):
+class RefillService(object):
     def __init__(self, pwm, bus):
-        super(Refiller, self).__init__()
+        super(RefillService, self).__init__()
         self._pwm = pwm
         self._pwm_task = None
         self._bus = bus
 
     async def start(self):
-        await self._bus.reg_rep('tank.refiller', self.refiller_callback)
+        await self._bus.reg_rep('tank.refiller', self.command_callback)
 
     async def stop(self):
         await self._stop_pwm()
@@ -37,7 +37,7 @@ class Refiller(object):
     def _is_pwm_stop(self):
         return False if self._pwm_task is not None else True
 
-    async def refiller_callback(self, data):
+    async def command_callback(self, data):
         cmd = data['command']
         if cmd == 'get':
             return self._status()
