@@ -25,15 +25,13 @@ class Heater(object):
         self._pwm.close()
         logger.info("stop heating water")
 
-    async def heater_callback(self, msg):
-        cmd = msg.data.decode()
+    async def heater_callback(self, data):
+        cmd = data['command']
         if cmd == 'get':
-            self._bus.pub(msg.reply, {
+            return {
                 "status": "ok",
                 "duty_cycle": self._pwm.duty_cycle,
                 "frequency": self._pwm.frequency
-            })
+            }
         else:
-            self._bus.pub(msg.reply,
-                          {"status": "error",
-                           "message": "unknown command"})
+            return {"status": "error", "message": "unknown command"}

@@ -12,10 +12,10 @@ class NatsBus(object):
         self._nats_client = NATS()
         self._url = "nats://%s:%d" % (host, port)
 
-    @staticmethod
-    def cb_wrap(callback):
+    def cb_wrap(self, callback):
         async def wrap(msg):
-            await callback(msg, json.loads(msg.data.decode()))
+            response = await callback(json.loads(msg.data.decode()))
+            await self.pub(msg.reply, response)
         return wrap
 
     async def start(self):
@@ -50,5 +50,5 @@ class NatsBus(object):
     async def reg_sub(self, path, callback):
         if not self._nats_client.is_connected:
             return False
-        await self._nats_client.subscribe(path, cb=NatsBus.cb_wrap(callback))
+        await self._nats_client.subscribe(path, cb=self.cb_wrap(callback))
         return True
