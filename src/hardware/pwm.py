@@ -19,7 +19,7 @@ class PWM(tio.IO):
     def close(self):
         raise NotImplementedError
 
-    def start(self):
+    async def start(self):
         raise NotImplementedError
 
     def stop(self):
