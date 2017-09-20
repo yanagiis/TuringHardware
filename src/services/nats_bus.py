@@ -16,6 +16,7 @@ class NatsBus(object):
         async def wrap(msg):
             response = await callback(json.loads(msg.data.decode()))
             await self.pub(msg.reply, response)
+
         return wrap
 
     async def start(self):
