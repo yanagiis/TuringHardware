@@ -35,20 +35,21 @@ class NatsBus(object):
         if not self._nats_client.is_connected:
             return None
         return await self._nats_client.timed_request(
-            path, json.dumps(payload).encode('utf-8'), timeout)
+            path + '.rep', json.dumps(payload).encode('utf-8'), timeout)
 
     async def reg_rep(self, path, callback):
-        return await self.reg_sub(path, callback)
+        return await self.reg_sub(path + '.rep', callback)
 
     async def pub(self, path, payload):
         if not self._nats_client.is_connected:
             return False
-        await self._nats_client.publish(path,
+        await self._nats_client.publish(path + '.pub',
                                         json.dumps(payload).encode('utf-8'))
         return True
 
     async def reg_sub(self, path, callback):
         if not self._nats_client.is_connected:
             return False
-        await self._nats_client.subscribe(path, cb=self.cb_wrap(callback))
+        await self._nats_client.subscribe(
+            path + '.pub', cb=self.cb_wrap(callback))
         return True
