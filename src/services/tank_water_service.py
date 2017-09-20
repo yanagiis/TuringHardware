@@ -17,7 +17,13 @@ class TankWaterService(object):
         self._interval = scan_interval_ms
         self._bus = bus
 
-    async def pub_water_full(self):
+    async def start(self):
+        self._bus.reg_rep('tank.water', self.rep_water_command)
+        while True:
+            self.pub_water_status()
+            await asyncio.sleep(float(self._interval) / 1000)
+
+    async def pub_water_status(self):
         if not self._sensor.is_connected() and not self._sensor.connect():
             await self._bus.pub('tank.water', {
                 "status": "error",
@@ -28,9 +34,16 @@ class TankWaterService(object):
         is_water_full = self._sensor.is_water_full()
         if is_water_full != self._is_water_full:
             self._is_water_full = is_water_full
-            await self._bus.pub('tank.water', {"water": self._is_water_full})
+            await self._bus.pub('tank.water', self._get_status())
 
-    async def start(self):
-        while True:
-            self.pub_water_full()
-            await asyncio.sleep(float(self._interval) / 1000)
+    async def rep_water_command(self, data):
+        if not self._sensor.is_connected() and not self._sensor.connect():
+            return {"status": "error", "message": "Cannot connect to sensor"}
+
+        cmd = data['command']
+        if cmd == 'get':
+            return self._get_status()
+        return {"status": "error", "message": "Unknown command '%s'" % cmd}
+
+    def _get_status(self):
+        return {"status": "ok", "water": self._is_water_full}
