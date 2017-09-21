@@ -24,6 +24,15 @@ class PID(object):
         self.reset()
 
     def compute(self, measure, setpoint, diff_time):
+        """
+        Args:
+            measure (float): the actual value
+            setpoint (float): the target value
+            diff_time (float): elapsed time
+        Return:
+            float:
+        """
+
         if self._last_measure is None:
             self._last_measure = measure
 
