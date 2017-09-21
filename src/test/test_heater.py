@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pytest
 import asyncio
+from contextlib import suppress
+
 from test.mock.pwm import MockPWM
 from test.mock.bus import MockBus
+from test.mock.pid import MockPID
+import pytest
 from services.heater import Heater
 
 

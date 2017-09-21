@@ -3,8 +3,9 @@
 
 import asyncio
 import argparse
-import yaml
 from contextlib import suppress
+
+import yaml
 from hardware.hw_manager import HWManager
 from services.service_manager import ServiceManager
 from services.nats_bus import NatsBus

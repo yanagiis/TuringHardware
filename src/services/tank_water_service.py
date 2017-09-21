@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import asyncio
-from logzero import logger
 
 
 class TankWaterService(object):

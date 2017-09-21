@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pytest
 import asyncio
 from test.mock.pwm import MockPWM
 from test.mock.bus import MockBus
+import pytest
 from services.refill_service import RefillService
 
 
