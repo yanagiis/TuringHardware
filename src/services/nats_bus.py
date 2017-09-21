@@ -15,7 +15,8 @@ class NatsBus(object):
     def cb_wrap(self, callback):
         async def wrap(msg):
             response = await callback(json.loads(msg.data.decode()))
-            await self.pub(msg.reply, response)
+            if response is not None:
+                await self.pub(msg.reply, response)
 
         return wrap
 
