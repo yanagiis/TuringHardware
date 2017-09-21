@@ -122,6 +122,7 @@ def create_heater_service(service_config, hwmanager, bus):
     Args:
         service_config(dict): heater service configuration
     """
+    scan_interval_ms = service_config['scan_interval_ms']
     pwm = service_config['pwm_dev']
     pid = service_config['pid_dev']
     pwm_dev = hwmanager.find_hardware(pwm)
@@ -132,7 +133,7 @@ def create_heater_service(service_config, hwmanager, bus):
     if pid_dev is None:
         logger.error("Cannot get dev '%s' in heater service", pid)
         return None
-    return Heater(pwm_dev, pid_dev, bus)
+    return Heater(pwm_dev, pid_dev, scan_interval_ms, bus)
 
 
 SERVICE_MAPPING = {
