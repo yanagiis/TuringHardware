@@ -16,37 +16,42 @@ class TankTempService(object):
         self._sensor = sensor
         self._interval = scan_interval_ms
         self._error_count = 0
+        self._bus = bus
+
         self._tempc = None
         self._tempc_available = False
-        self._bus = bus
+        self._message = 'Doesn\'t start'
 
     async def pub_tank_temperature(self):
         if not self._sensor.is_connected() and not self._sensor.connect():
-            await self._bus.pub('tank.temperature', {
-                "status": "error",
-                "message": "Cannot connect to sensor"
-            })
+            self._message = 'Cannot connect to sensor'
+            await self._bus.pub('tank.temperature', self._get_status())
             return
 
         try:
             tempc = self._sensor.read_measure_temp_c()
+            self._tempc = tempc
             self._tempc_available = True
-            await self._bus.pub('tank.temperature',
-                                {"status": "ok",
-                                 "temperature": tempc})
+            await self._bus.pub('tank.temperature', self._get_status())
         except HardwareError as error:
             self._tempc_available = False
             self._error_count += 1
             self._sensor.disconnect()
-            await self._bus.pub('tank.temperature', {
-                "status":
-                "error",
-                "message":
-                "output sensor '%s' got error: '%s'" % (error.name,
-                                                        error.message)
-            })
+            self._message = "output sensor '%s' got error: '%s'" % (
+                error.name, error.message)
+            await self._bus.pub('tank.temperature', self._get_status())
 
     async def start(self):
+        self._bus.reg_rep('tank_temperature', self.command_callback)
         while True:
             self.pub_tank_temperature()
             await asyncio.sleep(float(self._interval) / 1000)
+
+    async def command_callback(self, data):
+        if data['command'] == 'get':
+            return self._get_status()
+
+    def _get_status(self):
+        if self._tempc_available is True:
+            return {'status': 'ok', 'temperature': self._tempc}
+        return {'status': 'error', 'message': self._message}
