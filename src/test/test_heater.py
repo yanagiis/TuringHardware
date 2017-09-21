@@ -11,7 +11,8 @@ import pytest
 from services.heater import Heater
 
 
-def test_heater_start():
+@pytest.mark.asyncio
+async def test_heater_start():
     async def _req_cb(path, timeout):
         assert False
 
@@ -31,11 +32,16 @@ def test_heater_start():
     bus.reg_sub_cb = _reg_sub_cb
 
     pwm = MockPWM()
-    heater = Heater(pwm, bus)
-    asyncio.get_event_loop().run_until_complete(heater.start())
+    pid = MockPID()
+    heater = Heater(pwm, pid, 1000, bus)
 
+    loop = asyncio.get_event_loop()
+    task = loop.create_task(heater.start())
+
+    await asyncio.sleep(0.5)
     assert pwm._open is True
     assert pwm._start is True
+    task.cancel()
 
 
 @pytest.mark.asyncio
@@ -62,7 +68,8 @@ async def test_heater_command():
     pwm.duty_cycle = 50
     pwm.frequency = 51
 
-    heater = Heater(pwm, bus)
+    pid = MockPID()
+    heater = Heater(pwm, pid, 1000, bus)
 
     response = await heater.command_callback({'command': 'get'})
     assert response['status'] == 'ok'

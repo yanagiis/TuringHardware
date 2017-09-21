@@ -101,7 +101,9 @@ services:
 
   - heater:
       enable: true
-      dev: "pwm-0"
+      scan_interval_ms: 1000
+      pwm_dev: "pwm-0"
+      pid_dev: "pid-0"
 
   - brewer:
       enable: true
