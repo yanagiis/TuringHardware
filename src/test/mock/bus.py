@@ -11,8 +11,8 @@ class MockBus(object):
     async def start(self):
         raise NotImplementedError()
 
-    async def req(self, path, timeout):
-        await self.req_cb(path, timeout)
+    async def req(self, path, data, timeout=1):
+        return await self.req_cb(path, data, timeout)
 
     async def reg_rep(self, path, callback):
         await self.reg_rep_cb(path, callback)

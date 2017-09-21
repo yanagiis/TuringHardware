@@ -95,8 +95,9 @@ services:
       scan_interval_ms: 1000
       dev: "water-detector-0"
 
-  - refiller:
+  - refill_service:
       enable: true
+      scan_interval_ms: 1000
       dev: "pwm-1"
 
   - heater:

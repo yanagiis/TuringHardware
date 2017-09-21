@@ -6,25 +6,44 @@ from logzero import logger
 
 
 class RefillService(object):
-    def __init__(self, pwm, bus):
+    def __init__(self, pwm, scan_interval_ms, bus):
         super(RefillService, self).__init__()
         self._pwm = pwm
         self._pwm_task = None
         self._bus = bus
+        self._force_stop = False
+        self._interval_ms = scan_interval_ms
 
     async def start(self):
-        await self._bus.reg_rep('tank.refiller', self.command_callback)
+        await self._bus.reg_rep('tank.refill', self.command_callback)
+        while True:
+            if self._force_stop is False:
+                response = await self._bus.req('tank.water',
+                                               {'command': 'get'})
+                if response['status'] == 'ok' and response['water'] is True:
+                    await self._stop_pwm()
+                else:
+                    await self._start_pwm()
+            else:
+                self._stop_pwm()
+            await asyncio.sleep(0.5)
 
     async def stop(self):
         await self._stop_pwm()
 
     async def _start_pwm(self):
+        if not self._is_pwm_stop():
+            return
+
         self._pwm.open()
         self._pwm_task = asyncio.get_event_loop().create_task(
             self._pwm.start())
         logger.info("start refill water")
 
     async def _stop_pwm(self):
+        if self._is_pwm_stop():
+            return
+
         self._pwm.stop()
         self._pwm.close()
         self._pwm_task.cancel()
@@ -42,11 +61,11 @@ class RefillService(object):
         if cmd == 'get':
             return self._status()
         elif cmd == 'start':
-            await self._start_pwm()
-            return self._status()
+            self._force_stop = False
+            return {'status': 'ok'}
         elif cmd == 'stop':
-            await self._stop_pwm()
-            return self._status()
+            self._force_stop = True
+            return {'status': 'ok'}
 
         return {"status": "error", "message": "Unknown command '%s'" % cmd}
 

@@ -109,11 +109,12 @@ def create_refill_service(service_config, hwmanager, bus):
         service_config(dict): refill service configuration
     """
     dev = service_config['dev']
+    scan_interval_ms = service_config['scan_interavl_ms']
     hardware = hwmanager.find_hardware(dev)
     if hardware is None:
         logger.error("Cannot get dev '%s' in refill service", dev)
         return None
-    return RefillService(hardware, bus)
+    return RefillService(hardware, scan_interval_ms, bus)
 
 
 def create_heater_service(service_config, hwmanager, bus):
@@ -138,6 +139,6 @@ SERVICE_MAPPING = {
     "output_temp_service": create_output_temp_service,
     "tank_temp_service": create_tank_temp_service,
     "tank_water_service": create_tank_water_service,
-    "refill": create_refill_service,
+    "refill_service": create_refill_service,
     "heater": create_heater_service
 }

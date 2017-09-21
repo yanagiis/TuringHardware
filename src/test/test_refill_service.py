@@ -8,15 +8,18 @@ import pytest
 from services.refill_service import RefillService
 
 
-def test_refiller_start():
-    async def _req_cb(path, timeout):
-        assert False
+@pytest.mark.asyncio
+async def test_refiller_start():
+    async def _req_cb(path, data, timeout):
+        assert path == 'tank.water'
+        assert data['command'] == 'get'
+        return {'status': 'ok', 'water': True}
 
     async def _pub_cb(path, timeout):
         assert False
 
     async def _reg_rep_cb(path, callback):
-        assert path == 'tank.refiller'
+        assert path == 'tank.refill'
 
     async def _reg_sub_cb(path, callback):
         assert False
@@ -28,13 +31,18 @@ def test_refiller_start():
     bus.reg_sub_cb = _reg_sub_cb
 
     pwm = MockPWM()
-    refiller = RefillService(pwm, bus)
-    asyncio.get_event_loop().run_until_complete(refiller.start())
+    refiller = RefillService(pwm, 1000, bus)
+
+    loop = asyncio.get_event_loop()
+    task = loop.create_task(refiller.start())
+
+    await asyncio.sleep(0.5)
+    task.cancel()
 
 
 @pytest.mark.asyncio
 async def test_refiller_command():
-    async def _req_cb(path, timeout):
+    async def _req_cb(path, data, timeout):
         assert False
 
     async def _pub_cb(path, data):
@@ -56,7 +64,7 @@ async def test_refiller_command():
     pwm.duty_cycle = 50
     pwm.frequency = 51
 
-    service = RefillService(pwm, bus)
+    service = RefillService(pwm, 1000, bus)
 
     response = await service.command_callback({'command': 'get'})
     assert response['status'] == 'ok'
@@ -67,5 +75,4 @@ async def test_refiller_command():
 
     response = await service.command_callback({'command': 'start'})
     assert response['status'] == 'ok'
-    assert response['stop'] is False
     assert pwm._open is True
