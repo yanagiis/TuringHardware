@@ -51,5 +51,4 @@ class Heater(object):
                 "duty_cycle": self._pwm.duty_cycle,
                 "frequency": self._pwm.frequency
             }
-        else:
-            return {"status": "error", "message": "unknown command"}
+        return {"status": "error", "message": "unknown command"}
