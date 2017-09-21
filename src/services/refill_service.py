@@ -25,7 +25,7 @@ class RefillService(object):
                 else:
                     await self._start_pwm()
             else:
-                self._stop_pwm()
+                await self._stop_pwm()
             await asyncio.sleep(0.5)
 
     async def stop(self):
