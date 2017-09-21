@@ -20,7 +20,7 @@ class RefillService(object):
             if self._force_stop is False:
                 response = await self._bus.req('tank.water',
                                                {'command': 'get'})
-                if response['status'] == 'ok' and response['water'] is True:
+                if response['status'] != 'ok' or response['water'] is True:
                     await self._stop_pwm()
                 else:
                     await self._start_pwm()
