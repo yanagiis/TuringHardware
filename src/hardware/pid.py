@@ -47,6 +47,7 @@ class PID(object):
         output = self._limit_value(output)
 
         self._last_measure = measure
+        return output
 
     def reset(self):
         self._iterm = 0
