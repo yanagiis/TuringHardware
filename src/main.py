@@ -35,6 +35,8 @@ async def main():
     while True:
         await asyncio.sleep(1)
 
+    await svm.stop_all_servies()
+
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()

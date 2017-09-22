@@ -60,6 +60,10 @@ class ServiceManager(object):
         for _, service in self._services.items():
             loop.create_task(service.start())
 
+    async def stop_all_services(self):
+        for _, service in self._services.items():
+            await service.stop()
+
 
 def create_output_temp_service(service_config, hwmanager, bus):
     """
