@@ -20,7 +20,7 @@ class TankTempService(object):
 
         self._tempc = None
         self._tempc_available = False
-        self._message = 'Doesn\'t start'
+        self._message = 'Not ready'
         self._stop = False
         self._stop_event = asyncio.Event()
 
