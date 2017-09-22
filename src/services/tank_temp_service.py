@@ -21,6 +21,8 @@ class TankTempService(object):
         self._tempc = None
         self._tempc_available = False
         self._message = 'Doesn\'t start'
+        self._stop = False
+        self._stop_event = asyncio.Event()
 
     async def pub_tank_temperature(self):
         if not self._sensor.is_connected() and not self._sensor.connect():
@@ -43,9 +45,15 @@ class TankTempService(object):
 
     async def start(self):
         self._bus.reg_rep('tank_temperature', self.command_callback)
-        while True:
+        self._stop = False
+        while not self._stop:
             self.pub_tank_temperature()
             await asyncio.sleep(float(self._interval) / 1000)
+        self._stop_event.set()
+
+    async def stop(self):
+        self._stop = True
+        await self._stop_event.wait()
 
     async def command_callback(self, data):
         if data['command'] == 'get':

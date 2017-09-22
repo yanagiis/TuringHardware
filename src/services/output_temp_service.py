@@ -18,6 +18,8 @@ class OutputTempService(object):
         self._interval = scan_interval_ms
         self._error_count = 0
         self._tempc = None
+        self._stop = False
+        self._stop_event = asyncio.Event()
 
     async def pub_output_water_temperature(self):
         if not self._sensor.is_connected() and not self._sensor.connect():
@@ -47,6 +49,12 @@ class OutputTempService(object):
             })
 
     async def start(self):
-        while True:
+        self._stop = False
+        while not self._stop:
             self.pub_output_water_temperature()
             await asyncio.sleep(float(self._interval) / 1000)
+        self._stop_event.set()
+
+    async def stop(self):
+        self._stop = True
+        await self._stop_event.wait()

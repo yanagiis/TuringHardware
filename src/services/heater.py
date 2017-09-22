@@ -11,18 +11,20 @@ class Heater(object):
         self._pid = pid
         self._interval_ms = scan_interval_ms
         self._pwm_task = None
-        self._recv_task = None
         self._bus = bus
         self._target_temp = 0
+        self._stop = False
+        self._stop_event = asyncio.Event()
 
     async def start(self):
+        self._stop = False
         self._pwm.open()
         self._pwm_task = asyncio.get_event_loop().create_task(
             self._pwm.start())
         await self._bus.reg_rep('tank.heater', self.command_callback)
 
         logger.info("start heating water")
-        while True:
+        while not self._stop:
             response = await self._bus.req('tank.temperature',
                                            {'command': 'get'})
             if response['status'] == 'ok':
@@ -37,10 +39,14 @@ class Heater(object):
 
             await asyncio.sleep(float(self._interval_ms) / 1000)
 
-    async def stop(self):
-        self._pwm_task.cancel()
-        self._recv_task.cancel()
+        self._pwm.stop()
         self._pwm.close()
+        self._pwm_task = None
+        self._stop_event.set()
+
+    async def stop(self):
+        self._stop = True
+        await self._stop_event.wait()
         logger.info("stop heating water")
 
     async def command_callback(self, data):

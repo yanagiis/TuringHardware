@@ -11,13 +11,16 @@ class RefillService(object):
         self._pwm = pwm
         self._pwm_task = None
         self._bus = bus
-        self._force_stop = False
+        self._pause = False
         self._interval_ms = scan_interval_ms
+        self._stop = False
+        self._stop_event = asyncio.Event()
 
     async def start(self):
         await self._bus.reg_rep('tank.refill', self.command_callback)
-        while True:
-            if self._force_stop is False:
+        self._stop = False
+        while self._stop:
+            if self._pause is False:
                 response = await self._bus.req('tank.water',
                                                {'command': 'get'})
                 if response['status'] != 'ok' or response['water'] is True:
@@ -26,10 +29,14 @@ class RefillService(object):
                     await self._start_pwm()
             else:
                 await self._stop_pwm()
-            await asyncio.sleep(float(self._interval_ms)/1000)
+            await asyncio.sleep(float(self._interval_ms) / 1000)
+
+        await self._stop_pwm()
+        self._stop_event.set()
 
     async def stop(self):
-        await self._stop_pwm()
+        self._stop = True
+        await self._stop_event.wait()
 
     async def _start_pwm(self):
         if not self._is_pwm_stop():
@@ -61,10 +68,10 @@ class RefillService(object):
         if cmd == 'get':
             return self._status()
         elif cmd == 'start':
-            self._force_stop = False
+            self._pause = False
             return {'status': 'ok'}
         elif cmd == 'stop':
-            self._force_stop = True
+            self._pause = True
             return {'status': 'ok'}
 
         return {"status": "error", "message": "Unknown command '%s'" % cmd}

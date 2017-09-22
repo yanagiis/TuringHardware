@@ -16,14 +16,22 @@ class TankWaterService(object):
         self._bus = bus
 
         self._available = False
-        self._message = 'Doesn\'t start'
+        self._message = 'Not ready'
         self._is_water_full = None
+        self._stop = False
+        self._stop_event = asyncio.Event()
 
     async def start(self):
         self._bus.reg_rep('tank.water', self.rep_water_command)
-        while True:
+        self._stop = False
+        while not self._stop:
             self.pub_water_status()
             await asyncio.sleep(float(self._interval) / 1000)
+        self._stop_event.set()
+
+    async def stop(self):
+        self._stop = True
+        await self._stop_event.wait()
 
     async def pub_water_status(self):
         if not self._sensor.is_connected() and not self._sensor.connect():
