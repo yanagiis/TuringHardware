@@ -122,7 +122,7 @@ class MAX31856(Sensor):
 
         if tempc == 0:
             logger.error("MAX31856 get zero value")
-            raise HardwareError('max31856', 'get zero value' % fault)
+            raise HardwareError('max31856', 'get zero value')
 
         return tempc * MAX31856.RESOLUTION_TC
 
