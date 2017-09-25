@@ -11,8 +11,10 @@ class Point(object):
         e (float): water yield (ml)
         e1 (float): water yield of extruder 1
         e2 (float): water yield of extruder 2
-        t (flota): water time of extruder 1 and 2
+        t (float): target water temperature
+        time (flota): water time of extruder 1 and 2
     """
+
     def __init__(self):
         self.x = None
         self.y = None
@@ -22,6 +24,7 @@ class Point(object):
         self.e1 = None
         self.e2 = None
         self.t = None
+        self.time = None
 
     @staticmethod
     def create_move_point(x=None, y=None, z=None, f=None):
@@ -32,7 +35,15 @@ class Point(object):
         return point
 
     @staticmethod
-    def create_point(x=None, y=None, z=None, f=None, e=None, e1=None, e2=None, t=None):
+    def create_point(x=None,
+                     y=None,
+                     z=None,
+                     f=None,
+                     e=None,
+                     e1=None,
+                     e2=None,
+                     t=None,
+                     time=None):
         point = Point()
         point.x = x
         point.y = y
@@ -42,4 +53,5 @@ class Point(object):
         point.e1 = e1
         point.e2 = e2
         point.t = t
+        point.time = time
         return point
