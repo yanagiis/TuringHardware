@@ -63,3 +63,15 @@ class TankTempService(object):
         if self._tempc_available is True:
             return {'status': 'ok', 'temperature': self._tempc}
         return {'status': 'error', 'message': self._message}
+
+
+class TankTempClient(object):
+    def __init__(self, bus):
+        self._bus = bus
+
+    async def get_temperature(self):
+        response = await self._bus.req('tank.temperature', {'command': 'get'})
+        if response['status'] != 'ok':
+            logger.error("Cannot get tank temperature")
+            return None
+        return response['temperature']

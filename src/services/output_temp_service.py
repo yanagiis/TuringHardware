@@ -58,3 +58,16 @@ class OutputTempService(object):
     async def stop(self):
         self._stop = True
         await self._stop_event.wait()
+
+
+class OutputTempClient(object):
+    def __init__(self, bus):
+        self._bus = bus
+
+    async def get_temperature(self):
+        response = await self._bus.req('output.temperature',
+                                       {'command': 'get'})
+        if response['status'] != 'ok':
+            logger.error("Cannot get output temperature")
+            return None
+        return response['temperature']

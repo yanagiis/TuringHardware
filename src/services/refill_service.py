@@ -78,3 +78,14 @@ class RefillService(object):
 
     def _status(self):
         return {"status": "ok", "stop": self._is_pwm_stop()}
+
+
+class RefillClient(object):
+    def __init__(self, bus):
+        self._bus = bus
+
+    async def stop(self):
+        return await self._bus.req('tank.refill', {'command': 'stop'})
+
+    async def start(self):
+        return await self._bus.req('tank.refill', {'command': 'start'})
