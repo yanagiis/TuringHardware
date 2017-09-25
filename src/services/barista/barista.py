@@ -5,6 +5,9 @@ import asyncio
 from services.barista.point import Point
 from services.barista.point_translator import point_to_gcode
 from services.barista.point_translator import point_to_hcode
+from services.refill_service import RefillClient
+from services.output_temp_service import OutputTempClient
+from services.tank_temp_service import TankTempClient
 
 
 class WasteWaterPosition(Point):
@@ -33,6 +36,9 @@ class Barista(object):
         self._waste_water_position = waste_water_position
         self._default_moving_speed = 5000
         self._bus = bus
+        self._refill = RefillClient(bus)
+        self._output_temp = OutputTempClient(bus)
+        self._tank_temp = TankTempClient(bus)
 
         self._high_temperature = None
         self._low_temperature = None
@@ -189,21 +195,9 @@ class Barista(object):
             except asyncio.QueueFull:
                 return {'status': 'error', 'message': 'barista is busy'}
 
-    def _status(self):
-        pass
 
-    async def _get_temperature(self):
-        response = await self._bus.req('output.temperature',
-                                       {'command': 'get'})
-        if response['status'] != 'ok':
-            return None
-        return response['temperature']
-
-    async def _stop_tank(self):
-        await self._bus.req('tank.refill', {'command': 'stop'})
-
-    async def _start_tank(self):
-        await self._bus.req('tank.refill', {'command': 'start'})
+    async def _status(self):
+        return {'status': 'ok'}
 
     async def _move_to_waste_water_position(self):
         points = [
