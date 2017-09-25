@@ -51,13 +51,13 @@ class Barista(object):
         self._position = Point.create_point(x=0, y=0, z=0)
 
     def _create_wait(self, param):
-        time = param['time']
+        _time = param['time']
 
         async def implement(self):
-            nonlocal time
-            while not self._stop and time > 0:
+            nonlocal _time
+            while not self._stop and _time > 0:
                 asyncio.sleep(1)
-                time -= 1
+                _time -= 1
             return True
 
         return implement
