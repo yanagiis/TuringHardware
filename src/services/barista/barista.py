@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import time
+import math
 import asyncio
+from logzero import logger
 from services.barista.point import Point
 from services.barista.point_translator import point_to_gcode
 from services.barista.point_translator import point_to_hcode
@@ -42,7 +44,8 @@ class Barista(object):
         self._high_temperature = None
         self._low_temperature = None
         self._accumulated_water = 0
-        self._percentage = 0
+        self._current_target_temperature = None
+        self._current_percentage = None
 
         self._stop = False
         self._stop_event = asyncio.Event()
@@ -136,33 +139,51 @@ class Barista(object):
 
         return implement
 
-    def _create_handle_points(self, point_params):
+    def _create_handle_points(self, point_param):
         async def implement(self):
-            nonlocal point_params
-            points = []
-            for point_param in point_params:
-                points.append(Point.create_point(*point_param))
-            await self._handle_point(points)
+            nonlocal point_param
+            point = [Point.create_point(*point_param)]
+            await self._handle_point(point)
             return True
 
         return implement
 
     async def _handle_point(self, points):
         previous_time = time.time()
-        self._accumulated_water = 30
-        self._percentage = 0
-
         for point in points:
+
+            if point.t is not None and point.t != self._current_target_temperature:
+                self._current_target_temperature = point.t
+                self._current_percentage = (
+                    self._current_target_temperature - self._low_temperature
+                ) / (self._high_temperature - self._low_temperature)
+                self._mix_pid_dev.reset()
+
             if point.e is not None:
-                if self._accumulated_water >= 30:
-                    temperature = self._get_temperature()
-                    percentage = self._mix_pid_dev(temperature, point.t,
-                                                   time.time() - previous_time)
+                if self._accumulated_water >= 10:
+                    temperature = self._output_temp.get_temperature()
+                    percentage = self._current_percentage + self._mix_pid_dev(
+                        temperature, self._current_target_temperature,
+                        time.time() - previous_time) / 100
+                    if percentage > 1:
+                        percentage = 1
+                    elif percentage < 0:
+                        percentage = 0
                     self._accumulated_water = 0
+
                 point.e1 = point.e * percentage
                 point.e2 = point.e - point.e1
+                self._accumulated_water += point.e
+
+            distance = self._move_distance(point)
+            if distance == 0:
+                point.time = point.f
+            else:
+                point.time = distance * 60 / point.f
+
             gcode = point_to_gcode(point)
             hcode = point_to_hcode(point)
+            self._set_position(x=point.x, y=point.y, z=point.z)
 
             if gcode is not None:
                 self._moving_dev.send(gcode)
@@ -185,20 +206,24 @@ class Barista(object):
             self._moving_dev.send(cmd)
 
         while True:
-            point_params = await self._queue.get()
-            await self._stop_tank()
+            params = await self._queue.get()
+            await self._refill.stop()
 
             commands = []
-            for param in point_params:
-                if param['command'] and param['name'] in self._commands:
-                    commands += self._commands[param['name']]
+            for param in params:
+                if param['type'] == 'command' and param['name'] in self._commands:
+                    commands += self._commands[param['name']](param)
+                elif 'point' in param:
+                    commands += self._create_handle_points(param['point'])
                 else:
-                    commands += self._create_handle_points(param['points'])
+                    logger.error('Invalid input point %s', param)
+                    continue
 
+            self._reset()
             for command in commands:
                 await command()
 
-            await self._start_tank()
+            await self._refill.start()
 
     async def command_callback(self, data):
         cmd = data['command']
@@ -212,6 +237,12 @@ class Barista(object):
             except asyncio.QueueFull:
                 return {'status': 'error', 'message': 'barista is busy'}
 
+    def _reset(self):
+        self._high_temperature = self._tank_temp.get_temperature()
+        self._low_temperature = 20
+        self._accumulated_water = 0
+        self._current_target_temperature = None
+        self._current_percentage = None
 
     async def _status(self):
         return {'status': 'ok'}
@@ -226,10 +257,20 @@ class Barista(object):
         ]
         await self._handle_point(points)
 
-    async def _set_position(self, x=None, y=None, z=None):
+    def _set_position(self, x=None, y=None, z=None):
         if x is not None:
             self._position.x = x
         if y is not None:
             self._position.y = y
         if z is not None:
             self._position.z = z
+
+    def _move_distance(self, point):
+        distance = 0
+        if point.x is not None:
+            distance += (point.x - self._position.x)**2
+        if point.y is not None:
+            distance += (point.y - self._position.y)**2
+        if point.z is not None:
+            distance += (point.z - self._position.z)**2
+        return math.sqrt(distance)
