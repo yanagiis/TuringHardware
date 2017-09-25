@@ -26,8 +26,7 @@ class Barista(object):
             "calibration": self._create_calibration,
             "waste_water": self._create_waste_water,
             "mix": self._create_mix,
-            "home": self._create_home,
-            "point": self._create_handle_points
+            "home": self._create_home
         }
 
         self._moving_dev = moving_dev
