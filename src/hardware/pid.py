@@ -10,8 +10,8 @@ class PID(object):
             lower (float): lower bound of output value
             upper (float): upper bound of output value
         """
-        self._upper = upper
-        self._lower = lower
+        self.upper = upper
+        self.lower = lower
 
         self._pid_p = None
         self._pid_i = None
