@@ -112,12 +112,18 @@ class Barista(object):
 
         async def implement(self):
             await self._move_to_waste_water_position()
-            points = [Point.create_point(e=5, t=1)] * 2
+            points = [
+                Point.create_point(e=0.5, t=target_temperature, time=0.1)
+            ] * 20
+            previous_temperature = self._output_temp.get_temperature()
             while True:
                 self._handle_point(points)
-                current_temperature = self._get_temperature()
-                if abs(current_temperature - target_temperature) < 0.5:
+                current_temperature = self._output_temp.get_temperature()
+                diff = abs(current_temperature - target_temperature)
+                slope = abs(current_temperature - previous_temperature)
+                if diff < 0.5 and slope < 3 / 5:
                     break
+                previous_temperature = current_temperature
             return True
 
         return implement
