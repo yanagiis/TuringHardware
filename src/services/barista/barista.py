@@ -67,19 +67,31 @@ class Barista(object):
             # move
             await self._move_to_waste_water_position()
 
-            # e1
-            points = [Point.create_point(e1=3, t=1)] * 100
-            self._handle_point(points)
-            asyncio.sleep(1)
-            self._high_temperature = self._get_temperature()
+            def test_stable_temperature(self, points):
+                pre_temp = self._output_temp.get_temperature()
+                if pre_temp is None:
+                    return None
+                while True:
+                    self._handle_point(points)
+                    temp = self._output_temp.get_temperature()
+                    if temp is None:
+                        return None
+
+                    slope = abs((temp - pre_temp) / 5)
+                    if slope > 3 / 5:
+                        pre_temp = temp
+                        continue
+                    return temp
+
+            # e2
+            points = [Point.create_point(e2=0.6, time=0.1)] * 50
+            self._high_temperature = test_stable_temperature(self, points)
             if self._high_temperature is None:
                 return False
 
-            # e2
-            points = [Point.create_point(e2=3, t=1)] * 100
-            self._handle_point(points)
-            asyncio.sleep(1)
-            self._low_temperature = self._get_temperature()
+            # e1
+            points = [Point.create_point(e1=0.6, time=0.1)] * 50
+            self._low_temperature = test_stable_temperature(self, points)
             if self._low_temperature is None:
                 return False
             return True
