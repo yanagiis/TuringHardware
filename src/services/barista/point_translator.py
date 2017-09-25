@@ -24,7 +24,7 @@ def point_to_hcode(point):
 
     if point.e1 is None and point.e2 is None:
         return None
-    if point.t is None:
+    if point.time is None:
         return None
 
     hcode = "H"
@@ -32,5 +32,5 @@ def point_to_hcode(point):
         hcode += " E1%0.5f" % point.e1
     if point.e2 is not None:
         hcode += " E2%0.5f" % point.e2
-    hcode += "T %0.5f" % point.t
+    hcode += "T %0.5f" % point.time
     return hcode
