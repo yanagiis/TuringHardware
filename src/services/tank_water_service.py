@@ -22,10 +22,10 @@ class TankWaterService(object):
         self._stop_event = asyncio.Event()
 
     async def start(self):
-        self._bus.reg_rep('tank.water', self.rep_water_command)
+        await self._bus.reg_rep('tank.water', self.rep_water_command)
         self._stop = False
         while not self._stop:
-            self.pub_water_status()
+            await self.pub_water_status()
             await asyncio.sleep(float(self._interval) / 1000)
         self._stop_event.set()
 

@@ -44,10 +44,10 @@ class TankTempService(object):
             await self._bus.pub('tank.temperature', self._get_status())
 
     async def start(self):
-        self._bus.reg_rep('tank_temperature', self.command_callback)
+        await self._bus.reg_rep('tank_temperature', self.command_callback)
         self._stop = False
         while not self._stop:
-            self.pub_tank_temperature()
+            await self.pub_tank_temperature()
             await asyncio.sleep(float(self._interval) / 1000)
         self._stop_event.set()
 
