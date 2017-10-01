@@ -7,3 +7,6 @@ class MockPID(object):
 
     def compute(self, *_):
         return self.compute_result
+
+    def reset(self):
+        pass
