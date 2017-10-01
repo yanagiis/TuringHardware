@@ -32,6 +32,7 @@ class Point(object):
         point.x = x
         point.y = y
         point.z = z
+        point.f = f
         return point
 
     @staticmethod
