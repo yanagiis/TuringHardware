@@ -57,10 +57,10 @@ class PID(object):
         self._last_measure = None
 
     def _limit_value(self, value):
-        if value > self._upper:
-            return self._upper
-        elif value < self._lower:
-            return self._lower
+        if value > self.upper:
+            return self.upper
+        elif value < self.lower:
+            return self.lower
         return value
 
     def turing(self, pid_p, pid_i, pid_d):
