@@ -106,10 +106,10 @@ services:
       pwm_dev: "pwm-0"
       pid_dev: "pid-0"
 
-  - brewer:
+  - barista:
       enable: true
       moving_dev: "smoothie-0"
-      extrude_dev: "extruder-0"
+      extruder_dev: "extruder-0"
       pid_dev: "pid-1"
 
 bus:
