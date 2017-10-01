@@ -140,10 +140,33 @@ def create_heater_service(service_config, hwmanager, bus):
     return Heater(pwm_dev, pid_dev, scan_interval_ms, bus)
 
 
+def create_barista_service(service_config, hwmanager, bus):
+    """
+    Args:
+        service_config(dict): heater service configuration
+    """
+    moving = service_config['moving_dev']
+    extruder = service_config['extruder_dev']
+    pid = service_config['pid_dev']
+    moving_dev = hwmanager.find_hardware(moving)
+    extruder_dev = hwmanager.find_hardware(extruder)
+    pid_dev = hwmanager.find_hardware(pid)
+    if moving_dev is None:
+        logger.error("Cannot get dev '%s' in barista service", moving_dev)
+        return None
+    if extruder_dev is None:
+        logger.error("Cannot get dev '%s' in barista service", extruder_dev)
+        return None
+    if pid_dev is None:
+        logger.error("Cannot get dev '%s' in barista service", pid_dev)
+        return None
+
+
 SERVICE_MAPPING = {
     "output_temp_service": create_output_temp_service,
     "tank_temp_service": create_tank_temp_service,
     "tank_water_service": create_tank_water_service,
     "refill_service": create_refill_service,
-    "heater": create_heater_service
+    "heater": create_heater_service,
+    "barista": create_barista_service
 }
