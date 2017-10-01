@@ -18,7 +18,7 @@ hardwares:
 
   - uart:
       name: "tcpuart-0"
-      devpath: "rfc2217://turing-coffee-client"
+      devpath: "rfc2217://turing-coffee-client:2217"
       baudrate: 57600
       rtscts: false
       dsrdtr: false
