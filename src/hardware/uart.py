@@ -42,7 +42,7 @@ class UART(tio.IO, tio.Reader, tio.Writer):
     def open(self):
         self._serial.baudrate = self._config.baudrate
         self._serial.timeout = self._config.read_timeout
-        self._serial.writeTimeout = self._config.write_timeout
+        #self._serial.writeTimeout = self._config.write_timeout
         logger.info("Open '%s' with baudrate %d", self._devpath,
                     self._config.baudrate)
         self._serial.open()
