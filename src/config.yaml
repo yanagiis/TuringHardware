@@ -111,6 +111,11 @@ services:
       moving_dev: "smoothie-0"
       extruder_dev: "extruder-0"
       pid_dev: "pid-1"
+      waste_water_position:
+        x: 75
+        y: 35
+        z: 180
+      default_moving_speed: 5000
 
 bus:
   host: "alarm"

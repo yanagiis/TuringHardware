@@ -8,6 +8,7 @@ from services.tank_temp_service import TankTempService
 from services.tank_water_service import TankWaterService
 from services.refill_service import RefillService
 from services.heater import Heater
+from services.barista.barista import Barista, WasteWaterPosition
 
 
 class ServiceManager(object):
@@ -160,6 +161,11 @@ def create_barista_service(service_config, hwmanager, bus):
     if pid_dev is None:
         logger.error("Cannot get dev '%s' in barista service", pid_dev)
         return None
+    pos = service_config['waste_water_position']
+    speed = service_config['default_moving_speed']
+    return Barista(moving_dev, extruder_dev, pid_dev,
+                   WasteWaterPosition(x=pos['x'], y=pos['y'], z=pos['z']),
+                   speed, bus)
 
 
 SERVICE_MAPPING = {
