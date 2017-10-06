@@ -275,6 +275,13 @@ class Barista(object):
     async def brew(self, params):
         await self._refill.stop()
 
+        # XXX: maybe from config
+        if self._water_transformer.low_temperature is None:
+            self._water_transformer.low_temperature = 20
+        if self._water_transformer.high_temperature is None:
+            self._water_transformer.high_temperature = await self._tank_temp.get_temperature(
+            )
+
         commands = []
         for param in params:
             if param['type'] == 'command' and param['name'] in self._commands:
