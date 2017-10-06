@@ -285,7 +285,6 @@ class Barista(object):
         commands = []
         for param in params:
             if param['type'] == 'command' and param['name'] in self._commands:
-                print(self._commands[param['name']])
                 commands.append(self._commands[param['name']](param))
             elif 'point' in param:
                 commands.append(self._create_handle_points(param['point']))
