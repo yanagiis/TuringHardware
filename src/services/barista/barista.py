@@ -249,7 +249,7 @@ class Barista(object):
             if gcode is not None:
                 self._moving_dev.send(gcode)
             if hcode is not None:
-                self._extruder_dev.send(gcode)
+                self._extruder_dev.send(hcode)
 
             if gcode is not None:
                 while self._moving_dev.recv() != 'ok':
