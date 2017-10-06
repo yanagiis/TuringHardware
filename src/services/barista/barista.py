@@ -172,14 +172,15 @@ class Barista(object):
 
             # e2
             points = [Point.create_point(e2=0.6, time=0.1)] * 50
-            self._high_temperature = await test_stable_temperature(
+            self._water_transformer.high_temperature = await test_stable_temperature(
                 self, points)
             if self._high_temperature is None:
                 return False
 
             # e1
             points = [Point.create_point(e1=0.6, time=0.1)] * 50
-            self._low_temperature = await test_stable_temperature(self, points)
+            self._water_transformer.low_temperature = await test_stable_temperature(
+                self, points)
             if self._low_temperature is None:
                 return False
             return True
