@@ -40,7 +40,11 @@ class NatsBus(object):
             path + '.rep', json.dumps(payload).encode('utf-8'), timeout)
 
     async def reg_rep(self, path, callback):
-        return await self.reg_sub(path + '.rep', callback)
+        if not self._nats_client.is_connected:
+            return False
+        await self._nats_client.subscribe(
+            path + '.rep', cb=self.cb_wrap(callback))
+        return True
 
     async def pub(self, path, payload):
         if not self._nats_client.is_connected:
