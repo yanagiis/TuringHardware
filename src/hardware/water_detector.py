@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from periphery import GPIO
+from periphery import GPIO, GPIOError
 from hardware.sensor import Sensor
 
 
@@ -15,7 +15,12 @@ class WaterDetector(Sensor):
         self._is_connected = False
 
     def connect(self):
-        self._gpio = GPIO(self._gpio_pin, "in")
+        while True:
+            try:
+                self._gpio = GPIO(self._gpio_pin, "in")
+                break
+            except GPIOError:
+                continue
         self._is_connected = True
         return True
 

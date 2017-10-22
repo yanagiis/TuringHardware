@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from lib.tio import tio
-from periphery import GPIO
+from periphery import GPIO, GPIOError
 import asyncio
 
 
@@ -52,7 +52,12 @@ class SWPWM(PWM):
 
     def open(self):
         self._lock = asyncio.Lock()
-        self._gpio = GPIO(self._gpio_pin, "out")
+        while True:
+            try:
+                self._gpio = GPIO(self._gpio_pin, "out")
+                break
+            except GPIOError:
+                continue
 
     def close(self):
         self._gpio = GPIO(self._gpio_pin, "in")
