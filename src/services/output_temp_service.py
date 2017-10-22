@@ -46,6 +46,7 @@ class OutputTempService(object):
 
     async def start(self):
         self._stop = False
+        await self._bus.reg_rep('output.temperature', self.command_callback)
         while not self._stop:
             await self.pub_output_water_temperature()
             await asyncio.sleep(float(self._interval) / 1000)
