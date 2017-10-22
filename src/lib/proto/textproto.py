@@ -50,4 +50,4 @@ class TextProto(object):
         Args:
             data (bytes): write data with '\r\n' into writer
         """
-        self._writer.write(data + "\r\n")
+        self._writer.write(data.encode('ascii') + "\r\n")
