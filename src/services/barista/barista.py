@@ -41,11 +41,11 @@ class WaterTransformer(object):
 
     async def transform(self, point):
         if point.t is not None and point.t != self._current_target_temperature:
+            self.reset()
             self._current_target_temperature = point.t
             self._current_percentage = (
                 self._current_target_temperature - self.low_temperature) / (
                     self.high_temperature - self.low_temperature)
-            self.reset()
 
         if point.e is not None:
             if self._accumulated_water >= 10:
