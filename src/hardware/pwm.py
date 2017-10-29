@@ -4,6 +4,7 @@
 from lib.tio import tio
 from periphery import GPIO, GPIOError
 import asyncio
+import time
 
 
 class PWM(tio.IO):
@@ -57,6 +58,7 @@ class SWPWM(PWM):
                 self._gpio = GPIO(self._gpio_pin, "out")
                 break
             except GPIOError:
+                time.sleep(0.1)
                 continue
 
     def close(self):

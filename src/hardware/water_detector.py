@@ -3,6 +3,7 @@
 
 from periphery import GPIO, GPIOError
 from hardware.sensor import Sensor
+import time
 
 
 class WaterDetector(Sensor):
@@ -20,6 +21,7 @@ class WaterDetector(Sensor):
                 self._gpio = GPIO(self._gpio_pin, "in")
                 break
             except GPIOError:
+                time.sleep(0.1)
                 continue
         self._is_connected = True
         return True
