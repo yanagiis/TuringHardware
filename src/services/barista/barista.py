@@ -224,7 +224,7 @@ class Barista(object):
     def _create_home(self, _):
         async def implement():
             nonlocal self
-            self._moving_dev.send('G28')
+            Barista._send_code(self._moving_dev, 'G28')
             self._time_transformer.set_position(x=0, y=0, z=0)
             return True
 
@@ -242,23 +242,18 @@ class Barista(object):
 
     async def _handle_point(self, points):
         for point in points:
-            await self._water_transformer.transform(point)
-            await self._time_transformer.transform(point)
+            await asyncio.wait([
+                self._water_transformer.transform(point),
+                self._time_transformer.transform(point)
+            ])
 
             gcode = point_to_gcode(point)
             hcode = point_to_hcode(point)
 
-            if gcode is not None:
-                self._moving_dev.send(gcode)
-            if hcode is not None:
-                self._extruder_dev.send(hcode)
-
-            if gcode is not None:
-                while self._moving_dev.recv() != 'ok':
-                    await asyncio.sleep(0.1)
-            if hcode is not None:
-                while self._extruder_dev.recv() != 'ok':
-                    await asyncio.sleep(0.1)
+            await asyncio.wait([
+                Barista._send_code(self._moving_dev, gcode),
+                Barista._send_code(self._extruder_dev, hcode)
+            ])
 
     async def start(self):
         await self._bus.reg_rep('barista', self.command_callback)
@@ -268,7 +263,7 @@ class Barista(object):
         # HOME, Set Unit to Millimeters,
         # Set to Absolute Positioning, Set extruder to relative mode
         for cmd in ['G28', 'G21', 'G90', 'M83']:
-            self._moving_dev.send(cmd)
+            Barista._send_code(self._moving_dev, cmd)
 
         while True:
             params = await self._queue.get()
@@ -326,6 +321,12 @@ class Barista(object):
                 f=self._default_moving_speed)
         ]
         await self._handle_point(points)
+
+    @staticmethod
+    async def _send_code(dev, code):
+        dev.send(code)
+        while dev.recv() != 'ok':
+            await asyncio.sleep(0.1)
 
 
 class BaristaClient(object):
