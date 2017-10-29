@@ -3,6 +3,7 @@
 import time
 import math
 import asyncio
+from concurrent import futures
 from logzero import logger
 from services.barista.point import Point
 from services.barista.point_translator import point_to_gcode
@@ -326,3 +327,33 @@ class Barista(object):
                 f=self._default_moving_speed)
         ]
         await self._handle_point(points)
+
+
+class BaristaClient(object):
+    def __init__(self, bus):
+        self._bus = bus
+
+    async def brew(self, points):
+        try:
+            response = await self._bus.req(
+                'barista', {'command': 'brew',
+                            'points': points})
+            if response['status'] != 'ok':
+                logger.warn("Barista brew failed: %s", response['message'])
+                return response
+            return response
+        except futures.TimeoutError:
+            logger.warn("Request brew 'barista' timeout")
+            return None
+
+    async def get(self):
+        try:
+            response = await self._bus.req('barista', {'command': 'get'})
+            if response['status'] != 'ok':
+                logger.warn("Get barista status failed: %s",
+                            response['message'])
+                return None
+            return response
+        except futures.TimeoutError:
+            logger.warn("Request get 'barista' timeout")
+            return None
