@@ -111,7 +111,8 @@ class Barista(object):
             "calibration": self._create_calibration,
             "waste_water": self._create_waste_water,
             "mix": self._create_mix,
-            "home": self._create_home
+            "home": self._create_home,
+            "point": self._create_handle_point
         }
 
         self._moving_dev = moving_dev
@@ -285,10 +286,8 @@ class Barista(object):
 
         commands = []
         for param in params:
-            if param['type'] == 'command' and param['name'] in self._commands:
+            if param['name'] in self._commands:
                 commands.append(self._commands[param['name']](param))
-            elif 'point' in param:
-                commands.append(self._create_handle_points(param['point']))
             else:
                 logger.error('Invalid input point %s', param)
                 continue
