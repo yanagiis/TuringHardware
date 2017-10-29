@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
-
 
 class Point(object):
     """
@@ -28,27 +26,27 @@ class Point(object):
         self.t = None
         self.time = None
 
-    def toJSON(self):
-        _json = {}
+    def toDict(self):
+        _dict = {'name': 'point'}
         if self.x is not None:
-            _json['x'] = self.x
+            _dict['x'] = self.x
         if self.y is not None:
-            _json['y'] = self.y
+            _dict['y'] = self.y
         if self.z is not None:
-            _json['z'] = self.z
+            _dict['z'] = self.z
         if self.e is not None:
-            _json['e'] = self.e
+            _dict['e'] = self.e
         if self.f is not None:
-            _json['f'] = self.f
+            _dict['f'] = self.f
         if self.e1 is not None:
-            _json['e1'] = self.e1
+            _dict['e1'] = self.e1
         if self.e2 is not None:
-            _json['e2'] = self.e2
+            _dict['e2'] = self.e2
         if self.t is not None:
-            _json['t'] = self.t
+            _dict['t'] = self.t
         if self.time is not None:
-            _json['time'] = self.time
-        return json.dumps(_json)
+            _dict['time'] = self.time
+        return _dict
 
     @staticmethod
     def load(dicts):
@@ -59,6 +57,8 @@ class Point(object):
             point.y = dicts['y']
         if 'z' in dicts:
             point.z = dicts['z']
+        if 'f' in dicts:
+            point.f = dicts['f']
         if 'e' in dicts:
             point.e = dicts['e']
         if 'e1' in dicts:
