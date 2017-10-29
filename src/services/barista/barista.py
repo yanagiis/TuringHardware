@@ -228,7 +228,7 @@ class Barista(object):
 
         return implement
 
-    def _create_handle_points(self, point_param):
+    def _create_handle_point(self, point_param):
         async def implement():
             nonlocal self
             nonlocal point_param
