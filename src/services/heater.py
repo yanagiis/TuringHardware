@@ -53,8 +53,15 @@ class Heater(object):
         if cmd == 'get':
             return {
                 "status": "ok",
+                "target_temperature": self._target_temp,
                 "duty_cycle": self._pwm.duty_cycle,
                 "frequency": self._pwm.frequency
+            }
+        if cmd == 'put':
+            self._target_temp = data['temperature']
+            return {
+                "status": "ok",
+                "target_temperature": self._target_temp
             }
         return {"status": "error", "message": "unknown command"}
 
@@ -72,4 +79,15 @@ class HeaterClient(object):
                 return None
         except futures.TimeoutError:
             logger.warn("Cannot get 'tank.heater' status: request timeout")
+            return None
+
+    async def set_temperature(self, temperature):
+        try:
+            response = await self._bus.req('tank.heater', {'command': 'put'})
+            if response['status'] != 'ok':
+                logger.warn("Cannot put 'tank.heater' status: %s",
+                            response['message'])
+                return None
+        except futures.TimeoutError:
+            logger.warn("Cannot put 'tank.heater' status: request timeout")
             return None
