@@ -109,3 +109,15 @@ class RefillClient(object):
         except futures.TimeoutError:
             logger.warn("Request start 'tank.refill' timeout")
             return False
+
+    async def get(self):
+        try:
+            response = await self._bus.req('tank.refill', {'command': 'get'})
+            if response['status'] != 'ok':
+                logger.warn("Cannot get 'tank.refill' status: %s", response['message'])
+                return None
+            return response['stop']
+        except futures.TimeoutError:
+            logger.warn("Request get 'tank.refill' timeout")
+            return None
+
