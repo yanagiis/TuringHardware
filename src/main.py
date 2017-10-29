@@ -9,6 +9,7 @@ import yaml
 from hardware.hw_manager import HWManager
 from services.service_manager import ServiceManager
 from services.nats_bus import NatsBus
+from backend.server import start_backend
 
 
 async def main():
@@ -32,10 +33,12 @@ async def main():
     svm.import_config(configuration['services'], hwm, bus)
     svm.start_all_services()
 
-    while True:
-        await asyncio.sleep(1)
+    await start_backend(configuration['backend'], bus)
 
-    await svm.stop_all_servies()
+    while True:
+        await asyncio.sleep(5)
+
+    await svm.stop_all_services()
 
 
 if __name__ == '__main__':
