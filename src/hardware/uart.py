@@ -4,6 +4,7 @@
 from lib.tio import tio
 from serial import serial_for_url
 from logzero import logger
+import socket
 
 
 class UARTConfig(object):
@@ -58,3 +59,34 @@ class UART(tio.IO, tio.Reader, tio.Writer):
 
     def write(self, data):
         return self._serial.write(data)
+
+
+class TCPUART(tio.IO, tio.Reader tio.Writer):
+    """ TCP Uart
+    """
+    def __init__(self, host, port):
+        """
+        Args:
+            host (string): hostname or ip address
+            port (int): port number
+            uart_config (UARTConfig):
+        """
+
+        self._host = host
+        self._port = port
+        self._socket = None
+
+    def open(self):
+        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.connect((self._host, self._port))
+
+    def close(self):
+        if self._socket != None:
+            self._socket.close()
+            self._socket = None
+
+    def read(self, readsize):
+        return self._socket.recv(readsize)
+
+    def write(self, data):
+        return self._socket.write(data)
