@@ -233,7 +233,7 @@ class Barista(object):
         async def implement():
             nonlocal self
             nonlocal point_param
-            point = [Point.create_point(*point_param)]
+            point = [Point.load(point_param)]
             await self._handle_point(point)
             return True
 
