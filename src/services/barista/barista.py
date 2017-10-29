@@ -48,7 +48,7 @@ class WaterTransformer(object):
                 self._current_target_temperature - self.low_temperature) / (
                     self.high_temperature - self.low_temperature)
 
-        if point.e is not None:
+        if point.e is not None and point.e != 0:
             if self._accumulated_water >= 10:
                 temperature = await self._output_temp.get_temperature()
                 diff_time = 0
