@@ -224,7 +224,7 @@ class Barista(object):
     def _create_home(self, _):
         async def implement():
             nonlocal self
-            Barista._send_code(self._moving_dev, 'G28')
+            self._moving_dev.execute(data)
             self._time_transformer.set_position(x=0, y=0, z=0)
             return True
 
@@ -250,10 +250,10 @@ class Barista(object):
             gcode = point_to_gcode(point)
             hcode = point_to_hcode(point)
 
-            await asyncio.wait([
-                Barista._send_code(self._moving_dev, gcode),
-                Barista._send_code(self._extruder_dev, hcode)
-            ])
+            if gcode is not None:
+                self._moving_dev.execute(gcode)
+            if hcode is not None:
+                self._extruder_dev.execute(hcode)
 
     async def start(self):
         await self._bus.reg_rep('barista', self.command_callback)
@@ -263,7 +263,7 @@ class Barista(object):
         # HOME, Set Unit to Millimeters,
         # Set to Absolute Positioning, Set extruder to relative mode
         for cmd in ['G28', 'G21', 'G90', 'M83']:
-            Barista._send_code(self._moving_dev, cmd)
+            self._moving_dev.execute(cmd)
 
         while True:
             params = await self._queue.get()
@@ -321,12 +321,6 @@ class Barista(object):
                 f=self._default_moving_speed)
         ]
         await self._handle_point(points)
-
-    @staticmethod
-    async def _send_code(dev, code):
-        dev.send(code)
-        while dev.recv() != 'ok':
-            await asyncio.sleep(0.1)
 
 
 class BaristaClient(object):

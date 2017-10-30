@@ -24,8 +24,7 @@ class Smoothie(object):
         """
         for _ in range(retry_times):
             self._uart.open()
-            self.send('G')
-            if self.recv() != 'ok':
+            if self.execute('G') is not True:
                 self._uart.close()
                 continue
 
@@ -35,12 +34,18 @@ class Smoothie(object):
     def disconnect(self):
         self._uart.close()
 
-    def send(self, data):
+    def execute(self, data):
+        self._send(data)
+        if self._recv() != 'ok':
+            return False
+        return True
+
+    def _send(self, data):
         """
         Args:
             data (str): Gcode to write
         """
         self._textproto.writeline(data)
 
-    def recv(self):
+    def _recv(self):
         return self._textproto.readline().strip()
