@@ -8,7 +8,7 @@ from hardware.pwm import SWPWM, PWMConfig
 from hardware.smoothie import Smoothie
 from hardware.extruder import Extruder
 from hardware.spi import HWSPI, SPIConfig
-from hardware.uart import UART, UARTConfig, TCPUART
+from hardware.uart import UART, UARTConfig
 from hardware.water_detector import WaterDetector
 from hardware.pid import PID
 
@@ -169,12 +169,6 @@ def create_uart(hardware_config, _):
     return UART(hardware_config['devpath'], uart_config)
 
 
-def create_tcpuart(hardware_config, _):
-    host = hardware_config['host']
-    port = hardware_config['port']
-    return TCPUART(host, port)
-
-
 def create_water_detector(hardware_config, _):
     gpio_pin = hardware_config['gpio']
     return WaterDetector(gpio_pin)
@@ -197,7 +191,6 @@ HARDWARE_MAPPING = {
     "extruder": create_extruder,
     "hwspi": create_hwspi,
     "uart": create_uart,
-    "tcpuart": create_tcpuart,
     "water_detector": create_water_detector,
     "pid": create_pid
 }
