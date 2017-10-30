@@ -55,7 +55,7 @@ class UART(tio.IO, tio.Reader, tio.Writer):
             logger.info("Close '%s'", self._devpath)
 
     def read(self, readsize):
-        return self._serial.read(readsize)
+        return self._serial.readline()
 
     def write(self, data):
         return self._serial.write(data)
