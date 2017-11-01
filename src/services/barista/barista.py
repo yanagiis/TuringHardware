@@ -224,7 +224,7 @@ class Barista(object):
     def _create_home(self, _):
         async def implement():
             nonlocal self
-            self._moving_dev.execute(data)
+            self._moving_dev.execute('G28')
             self._time_transformer.set_position(x=0, y=0, z=0)
             return True
 
