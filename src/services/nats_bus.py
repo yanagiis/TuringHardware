@@ -39,6 +39,7 @@ class NatsBus(object):
                 disconnected_cb=self._disconnected_cb,
                 reconnected_cb=self._reconnected_cb,
                 error_cb=self._error_cb)
+            logger.info("Connect to nats server successfully")
         except ErrNoServers:
             pass
 
