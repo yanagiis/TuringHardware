@@ -21,18 +21,26 @@ class NatsBus(object):
 
         return wrap
 
+    async def _disconnected_cb(self):
+        logger.info("Disconnected from nats server")
+
+    async def _reconnected_cb(self):
+        logger.info("Reconnected to nats server")
+
+    async def _error_cb(self, e):
+        logger.info("Nats connection error: %s", e)
+
     async def start(self):
-        retry_times = 0
-        while True:
-            try:
-                logger.info("Try to connect to nats server '%s', %d times",
-                            self._url, retry_times)
-                await self._nats_client.connect(servers=[self._url])
-                break
-            except ErrNoServers:
-                retry_times += 1
-                logger.error("Cannot connect to nats server '%s'", self._url)
-        logger.info("Connect to nats server '%s' successfully", self._url)
+        try:
+            logger.info("Try to connect to nats server '%s'", self._url)
+            await self._nats_client.connect(
+                servers=[self._url],
+                max_reconnect_attempts=-1,
+                disconnected_cb=self._disconnected_cb,
+                reconnected_cb=self._reconnected_cb,
+                error_cb=self._error_cb)
+        except ErrNoServers:
+            pass
 
     async def req(self, path, payload, timeout=1):
         if not self._nats_client.is_connected:
