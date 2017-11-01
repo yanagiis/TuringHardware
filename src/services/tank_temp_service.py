@@ -74,6 +74,9 @@ class TankTempClient(object):
         try:
             response = await self._bus.req('tank.temperature',
                                            {'command': 'get'})
+            if response is None:
+                logger.warn("Get 'tank.temperature' status timeout")
+                return None
             if response['status'] != 'ok':
                 logger.error("Cannot get tank temperature")
                 return None

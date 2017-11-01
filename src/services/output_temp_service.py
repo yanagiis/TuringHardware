@@ -80,6 +80,9 @@ class OutputTempClient(object):
         try:
             response = await self._bus.req('output.temperature',
                                            {'command': 'get'})
+            if response is None:
+                logger.warn("Get output temperature timeout")
+                return None
             if response['status'] != 'ok':
                 logger.warn("Cannot get output temperature: %s",
                             response['message'])

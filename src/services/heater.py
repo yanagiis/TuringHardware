@@ -73,6 +73,9 @@ class HeaterClient(object):
     async def get_status(self):
         try:
             response = await self._bus.req('tank.heater', {'command': 'get'})
+            if response is None:
+                logger.warn("Get 'tank.heater' timeout")
+                return None
             if response['status'] != 'ok':
                 logger.warn("Cannot get 'tank.heater' status: %s",
                             response['message'])
@@ -84,6 +87,9 @@ class HeaterClient(object):
     async def set_temperature(self, temperature):
         try:
             response = await self._bus.req('tank.heater', {'command': 'put'})
+            if response is None:
+                logger.warn("Update 'tank.heater' timeout")
+                return None
             if response['status'] != 'ok':
                 logger.warn("Cannot put 'tank.heater' status: %s",
                             response['message'])

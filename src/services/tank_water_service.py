@@ -67,6 +67,9 @@ class TankWaterClient(object):
     async def get_water_level(self):
         try:
             response = await self._bus.req('tank.water', {'command': 'get'})
+            if response is None:
+                logger.warn("Get 'tank.water' timeout")
+                return None
             if response['status'] != 'ok':
                 logger.warn("Cannot get 'tank.water' status: %s",
                             response['message'])

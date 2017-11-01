@@ -332,6 +332,9 @@ class BaristaClient(object):
             response = await self._bus.req(
                 'barista', {'command': 'brew',
                             'points': points})
+            if response is None:
+                logger.warn("Barista brew timeout")
+                return None
             if response['status'] != 'ok':
                 logger.warn("Barista brew failed: %s", response['message'])
                 return response
@@ -343,6 +346,9 @@ class BaristaClient(object):
     async def get(self):
         try:
             response = await self._bus.req('barista', {'command': 'get'})
+            if response is None:
+                logger.warn("Get barista status timeout")
+                return None
             if response['status'] != 'ok':
                 logger.warn("Get barista status failed: %s",
                             response['message'])

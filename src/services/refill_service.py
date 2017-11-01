@@ -90,6 +90,9 @@ class RefillClient(object):
     async def stop(self):
         try:
             response = await self._bus.req('tank.refill', {'command': 'stop'})
+            if response is None:
+                logger.warn("Stop 'tank.refill' timeout")
+                return False
             if response['status'] != 'ok':
                 logger.warn("Cannot stop 'tank.refill': %s",
                             response['message'])
@@ -102,8 +105,12 @@ class RefillClient(object):
     async def start(self):
         try:
             response = await self._bus.req('tank.refill', {'command': 'start'})
+            if response is None:
+                logger.warn("Start 'tank.refill' timeout")
+                return False
             if response['status'] != 'ok':
-                logger.warn("Cannot start 'tank.refill': %s", response['message'])
+                logger.warn("Cannot start 'tank.refill': %s",
+                            response['message'])
                 return False
             return True
         except futures.TimeoutError:
@@ -113,6 +120,9 @@ class RefillClient(object):
     async def get(self):
         try:
             response = await self._bus.req('tank.refill', {'command': 'get'})
+            if response is None:
+                logger.warn("Get 'tank.refill' status timeout")
+                return None
             if response['status'] != 'ok':
                 logger.warn("Cannot get 'tank.refill' status: %s", response['message'])
                 return None
