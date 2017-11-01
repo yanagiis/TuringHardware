@@ -124,10 +124,10 @@ class RefillClient(object):
                 logger.warn("Get 'tank.refill' status timeout")
                 return None
             if response['status'] != 'ok':
-                logger.warn("Cannot get 'tank.refill' status: %s", response['message'])
+                logger.warn("Cannot get 'tank.refill' status: %s",
+                            response['message'])
                 return None
             return response['stop']
         except futures.TimeoutError:
             logger.warn("Request get 'tank.refill' timeout")
             return None
-

@@ -59,10 +59,7 @@ class Heater(object):
             }
         if cmd == 'put':
             self._target_temp = data['temperature']
-            return {
-                "status": "ok",
-                "target_temperature": self._target_temp
-            }
+            return {"status": "ok", "target_temperature": self._target_temp}
         return {"status": "error", "message": "unknown command"}
 
 
