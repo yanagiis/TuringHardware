@@ -116,7 +116,8 @@ class MAX31865(Sensor):
 
         [rtd_msb, rtd_lsb] = self._read_reg(MAX31865.ADDR_RTDH, 2)
         if rtd_lsb & 0x1 != 0:
-            logger.error("MAX31865 get fault")
+            logger.error("MAX31865 get fault 0x%08x", self.error)
+            self._clearfault()
             raise HardwareError('max31865', 'sensor return fault')
 
         rtd_adc_code = ((rtd_msb << 8) | rtd_lsb) >> 1
@@ -157,6 +158,16 @@ class MAX31865(Sensor):
     def wire(self, wire):
         [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
         cr_value = (cr_value & 0xef) | (wire << 4)
+        self._write_reg(MAX31865.ADDR_CR, [cr_value])
+
+    @property
+    def error(self):
+        [cr_value] = self._read_reg(MAX31865.ADDR_FAULT, 1)
+        return cr_value
+
+    def _clearfault(self):
+        [cr_value] = self._read_reg(MAX31865.ADDR_CR, 1)
+        cr_value |= 0x2
         self._write_reg(MAX31865.ADDR_CR, [cr_value])
 
     def _read_reg(self, addr, size):
