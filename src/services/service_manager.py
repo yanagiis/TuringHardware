@@ -3,6 +3,7 @@
 
 import asyncio
 from logzero import logger
+from services.nats_bus import NatsBus
 from services.output_temp_service import OutputTempService
 from services.tank_temp_service import TankTempService
 from services.tank_water_service import TankWaterService
@@ -18,12 +19,11 @@ class ServiceManager(object):
     def __init__(self):
         self._services = {}
 
-    def import_config(self, configs, hwmanager, bus):
+    async def import_config(self, configs, hwmanager, host, port):
         """
         Args:
             configs (dict): service configuration
             hwmanager (HardwareManager): get hardware from hwmanager
-            bus (bus): connect each services
         """
         for config in configs:
             service_name = list(config.keys())[0]
@@ -41,6 +41,8 @@ class ServiceManager(object):
                 logger.info("Service '%s' is disabled'", service_name)
                 continue
 
+            bus = NatsBus(host, port)
+            await bus.start()
             service = SERVICE_MAPPING[service_name](config[service_name],
                                                     hwmanager, bus)
             if service is not None:

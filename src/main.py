@@ -24,14 +24,15 @@ async def main():
 
     hwm = HWManager()
     hwm.import_config(configuration['hardwares'])
-
     bus_config = configuration['bus']
-    bus = NatsBus(bus_config['host'], bus_config['port'])
-    await bus.start()
 
     svm = ServiceManager()
-    svm.import_config(configuration['services'], hwm, bus)
+    await svm.import_config(configuration['services'], hwm, bus_config['host'],
+                      bus_config['port'])
     svm.start_all_services()
+
+    bus = NatsBus(bus_config['host'], bus_config['port'])
+    await bus.start()
 
     await start_backend(configuration['backend'], bus)
 
