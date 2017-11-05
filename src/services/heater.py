@@ -77,6 +77,7 @@ class HeaterClient(object):
                 logger.warn("Cannot get 'tank.heater' status: %s",
                             response['message'])
                 return None
+            return response
         except futures.TimeoutError:
             logger.warn("Cannot get 'tank.heater' status: request timeout")
             return None
@@ -91,6 +92,7 @@ class HeaterClient(object):
                 logger.warn("Cannot put 'tank.heater' status: %s",
                             response['message'])
                 return None
+            return response
         except futures.TimeoutError:
             logger.warn("Cannot put 'tank.heater' status: request timeout")
             return None
