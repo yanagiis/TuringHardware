@@ -16,7 +16,7 @@ class MachineView(web.View):
         tank_temp = await tank_temp_client.get_temperature()
         water_level = await tank_water_client.get_water_level()
         refill_status = await refill_client.get()
-        heater_status = await heater_client.get_status()
+        heater_status = await heater_client.get()
 
         return await response.response(200, "Get machine status successfully",
                                        {

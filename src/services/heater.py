@@ -67,7 +67,7 @@ class HeaterClient(object):
     def __init__(self, bus):
         self._bus = bus
 
-    async def get_status(self):
+    async def get(self):
         try:
             response = await self._bus.req('tank.heater', {'command': 'get'})
             if response is None:
