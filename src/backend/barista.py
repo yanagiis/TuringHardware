@@ -27,7 +27,8 @@ class BrewView(web.View):
                                                None)
             points_array += points
 
-        print(len(points))
+        barista_client = self.request.app['barista_client']
+        await barista_client.brew([point.toDict() for point in points_array])
 
         return await response.response(200, 'Brew successfully', None)
 

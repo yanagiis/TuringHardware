@@ -12,6 +12,7 @@ from services.tank_temp_service import TankTempClient
 from services.tank_water_service import TankWaterClient
 from services.refill_service import RefillClient
 from services.heater import HeaterClient
+from services.barista.barista import BaristaClient
 
 
 async def start_backend(config, bus):
@@ -35,6 +36,7 @@ async def start_backend(config, bus):
     app['tank_water_client'] = TankWaterClient(bus)
     app['refill_client'] = RefillClient(bus)
     app['heater_client'] = HeaterClient(bus)
+    app['barista_client'] = BaristaClient(bus)
 
     app.router.add_route('*', '/api/barista/{id}/brew', barista.BrewView)
     app.router.add_route('*', '/api/barista/jog', barista.JogView)
