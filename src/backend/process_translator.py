@@ -80,10 +80,13 @@ def _fixedpoint_to_points(process):
     water = process['water']
     temperature = process['temperature']
 
-    return [
+    points = [
         Point.create_move_point(x=coordinates_x, y=coordinates_y, z=z, f=5000),
-        Point.create_point(e=water, f=(water / time), t=temperature)
     ]
+
+    for _ in range(water * time):
+        points.append(Point.create_point(e=0.1, f=time / water, t=temperature))
+    return points
 
 
 def _move_to_points(process):
