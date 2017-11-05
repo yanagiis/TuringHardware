@@ -28,7 +28,7 @@ class Heater(object):
 
         logger.info("start heating water")
         while not self._stop:
-            temperature = self._tank_temp_client.get_temperature()
+            temperature = await self._tank_temp_client.get_temperature()
             if temperature is None:
                 logger.warn('Cannot get temperature, stop heat')
                 self._pwm.dutycycle = 0
