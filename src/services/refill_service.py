@@ -54,7 +54,7 @@ class RefillService(object):
         if self._is_pwm_stop():
             return
 
-        self._pwm.stop()
+        await self._pwm.stop()
         self._pwm.close()
         self._pwm_task.cancel()
         try:
