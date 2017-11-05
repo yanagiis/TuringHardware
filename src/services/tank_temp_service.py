@@ -59,6 +59,10 @@ class TankTempService(object):
     async def command_callback(self, data):
         if data['command'] == 'get':
             return self._get_status()
+        return {
+            'status': 'error',
+            'message': "Unknown command '%s'" % data['command']
+        }
 
     def _get_status(self):
         if self._tempc_available is True:
