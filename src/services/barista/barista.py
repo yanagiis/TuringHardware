@@ -196,7 +196,7 @@ class Barista(object):
             nonlocal self
             await self._move_to_waste_water_position()
             points = [Point.create_point(e1=3, e2=3, t=1)] * 10
-            self._handle_point(points)
+            await self._handle_point(points)
             return True
 
         return implement
@@ -212,7 +212,7 @@ class Barista(object):
             ] * 20
             previous_temperature = await self._output_temp.get_temperature()
             while True:
-                self._handle_point(points)
+                await self._handle_point(points)
                 current_temperature = await self._output_temp.get_temperature()
                 diff = abs(current_temperature - target_temperature)
                 slope = abs(current_temperature - previous_temperature)
