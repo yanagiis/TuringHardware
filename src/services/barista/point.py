@@ -69,6 +69,7 @@ class Point(object):
             point.t = dicts['t']
         if 'time' in dicts:
             point.time = dicts['time']
+        return point
 
     @staticmethod
     def create_move_point(x=None, y=None, z=None, f=None):
