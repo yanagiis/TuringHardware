@@ -146,7 +146,7 @@ class Barista(object):
             nonlocal self
             nonlocal _time
             while not self._stop and _time > 0:
-                asyncio.sleep(1)
+                await asyncio.sleep(1)
                 _time -= 1
             return True
 
