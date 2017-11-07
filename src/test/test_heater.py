@@ -76,5 +76,5 @@ async def test_heater_command():
     assert response['duty_cycle'] == 50
     assert response['frequency'] == 51
 
-    response = await heater.command_callback({'command': 'put'})
-    assert response['status'] == 'error'
+    response = await heater.command_callback({'command': 'put', 'temperature': 80})
+    assert response['status'] == 'ok'

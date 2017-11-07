@@ -20,6 +20,10 @@ class MovingDev(object):
     def recv(self):
         return "ok"
 
+    def execute(self, command):
+        self.sent_commands.append(command)
+        return "ok"
+
 
 class ExtruderDev(object):
     def __init__(self):
@@ -32,6 +36,10 @@ class ExtruderDev(object):
         self.sent_commands.append(command)
 
     def recv(self):
+        return "ok"
+
+    def execute(self, command):
+        self.sent_commands.append(command)
         return "ok"
 
 
@@ -96,10 +104,11 @@ async def test_barista_brew():
     pos = barista.WasteWaterPosition(x=70, y=50, z=180)
     b = barista.Barista(moving, extruder, pid, pos, 5000, bus)
 
-    await b.brew([{'type': 'command', 'name': 'home'}])
+    await b.brew([{'name': 'home'}])
     assert len(moving.sent_commands) == 1
     assert moving.sent_commands[0] == 'G28'
 
-    await b.brew([{'type': 'command', 'name': 'calibration'}])
+    await b.brew([{'name': 'calibration'}])
     assert moving.sent_commands[0] == 'G28'
-    assert moving.sent_commands[1] == 'G1 X70.00000 Y50.00000 Z180.00000 F5000.00000'
+    assert moving.sent_commands[
+        1] == 'G1 X70.00000 Y50.00000 Z180.00000 F5000.00000'
