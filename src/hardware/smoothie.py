@@ -35,17 +35,17 @@ class Smoothie(object):
         self._uart.close()
 
     def execute(self, data):
-        self._send(data)
-        if self._recv() != 'ok':
+        self.send(data)
+        if self.recv() != 'ok':
             return False
         return True
 
-    def _send(self, data):
+    def send(self, data):
         """
         Args:
             data (str): Gcode to write
         """
         self._textproto.writeline(data)
 
-    def _recv(self):
+    def recv(self):
         return self._textproto.readline().strip()

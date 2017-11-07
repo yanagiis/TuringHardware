@@ -253,9 +253,16 @@ class Barista(object):
             hcode = point_to_hcode(point)
 
             if gcode is not None:
-                self._moving_dev.execute(gcode)
+                self._moving_dev.send(gcode)
             if hcode is not None:
-                self._extruder_dev.execute(hcode)
+                self._extruder_dev.send(hcode)
+
+            if gcode is not None:
+                while self._moving_dev.recv() != 'ok':
+                    pass
+            if hcode is not None:
+                while self._extruder_dev.recv() != 'ok':
+                    pass
 
     async def start(self):
         await self._bus.reg_rep('barista', self.command_callback)
