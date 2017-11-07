@@ -85,7 +85,7 @@ def _fixedpoint_to_points(process):
     ]
 
     for _ in range(water * time):
-        points.append(Point.create_point(e=0.1, f=time / water, t=temperature))
+        points.append(Point.create_point(e=1, f=time / water, t=temperature))
     return points
 
 
