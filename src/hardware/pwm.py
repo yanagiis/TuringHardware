@@ -4,6 +4,7 @@
 from lib.tio import tio
 from periphery import GPIO, GPIOError
 import asyncio
+import threading
 import time
 
 
@@ -52,7 +53,7 @@ class SWPWM(PWM):
         self._stop_event = asyncio.Event()
 
     def open(self):
-        self._lock = asyncio.Lock()
+        self._lock = threading.Lock()
         while True:
             try:
                 self._gpio = GPIO(self._gpio_pin, "out")
@@ -95,7 +96,7 @@ class SWPWM(PWM):
     async def start(self):
         self._stop = False
         while not self._stop:
-            await self._lock
+            self._lock.acquire()
             on_time = self._dutycycle / self._freq
             off_time = (1 - self._dutycycle) / self._freq
             self._lock.release()
