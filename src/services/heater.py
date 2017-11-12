@@ -54,7 +54,7 @@ class Heater(object):
             return {
                 "status": "ok",
                 "target_temperature": self._target_temp,
-                "duty_cycle": self._pwm.duty_cycle,
+                "duty_cycle": self._pwm.dutycycle,
                 "frequency": self._pwm.frequency
             }
         if cmd == 'put':
