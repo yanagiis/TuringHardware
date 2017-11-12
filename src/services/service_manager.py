@@ -98,7 +98,7 @@ def create_tank_temp_service(service_config, hwmanager, sbus, _):
     return TankTempService(hardware, scan_interval_ms, sbus)
 
 
-def create_tank_water_service(service_config, hwmanager, sbus):
+def create_tank_water_service(service_config, hwmanager, sbus, _):
     """
     Args:
         service_config(dict): tank water service configuration
