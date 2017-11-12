@@ -8,16 +8,16 @@ from services.tank_water_service import TankWaterClient
 
 
 class RefillService(object):
-    def __init__(self, pwm, scan_interval_ms, bus):
+    def __init__(self, pwm, scan_interval_ms, sbus, cbus):
         super(RefillService, self).__init__()
         self._pwm = pwm
         self._pwm_task = None
-        self._bus = bus
+        self._bus = sbus
         self._pause = False
         self._interval_ms = scan_interval_ms
         self._stop = False
         self._stop_event = asyncio.Event()
-        self._tank_water_client = TankWaterClient(bus)
+        self._tank_water_client = TankWaterClient(cbus)
 
     async def start(self):
         await self._bus.reg_rep('tank.refill', self.command_callback)

@@ -8,14 +8,15 @@ from hardware.error import HardwareError
 
 
 class OutputTempService(object):
-    def __init__(self, sensor, scan_interval_ms, bus):
+    def __init__(self, sensor, scan_interval_ms, sbus, cbus):
         """
         Args:
             sensor: temperature sensor, can be max31856 and max31865
             scan_interval_ms (int): scan interval in milisecond
         """
         self._sensor = sensor
-        self._bus = bus
+        self._sbus = sbus
+        self._cbus = cbus
         self._interval = scan_interval_ms
         self._error_count = 0
         self._tempc = None
@@ -28,25 +29,25 @@ class OutputTempService(object):
         if not self._sensor.is_connected() and not self._sensor.connect():
             self._temp_available = False
             self._message = "Cannot connect to sensor"
-            await self._bus.pub('output.temperature', self._status())
+            await self._sbus.pub('output.temperature', self._status())
 
         try:
             tempc = self._sensor.read_measure_temp_c()
             self._tempc = tempc
             self._message = None
             self._temp_available = True
-            await self._bus.pub('output.temperature', self._status())
+            await self._sbus.pub('output.temperature', self._status())
         except HardwareError as error:
             self._temp_available = False
             self._error_count += 1
             self._message = "output sensor '%s' got error: '%s'" % (
                 error.name, error.message)
             self._sensor.disconnect()
-            await self._bus.pub('output.temperature', self._status())
+            await self._sbus.pub('output.temperature', self._status())
 
     async def start(self):
         self._stop = False
-        await self._bus.reg_rep('output.temperature', self.command_callback)
+        await self._sbus.reg_rep('output.temperature', self.command_callback)
         while not self._stop:
             await self.pub_output_water_temperature()
             await asyncio.sleep(float(self._interval) / 1000)

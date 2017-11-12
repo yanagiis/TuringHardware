@@ -41,10 +41,12 @@ class ServiceManager(object):
                 logger.info("Service '%s' is disabled'", service_name)
                 continue
 
-            bus = NatsBus(host, port)
-            await bus.start()
+            sbus = NatsBus(host, port)
+            await sbus.start()
+            cbus = NatsBus(host, port)
+            await cbus.start()
             service = SERVICE_MAPPING[service_name](config[service_name],
-                                                    hwmanager, bus)
+                                                    hwmanager, sbus, cbus)
             if service is not None:
                 logger.info("Create service instance '%s'", service_name)
                 self._services[service_name] = service
@@ -68,7 +70,7 @@ class ServiceManager(object):
             await service.stop()
 
 
-def create_output_temp_service(service_config, hwmanager, bus):
+def create_output_temp_service(service_config, hwmanager, sbus, _):
     """
     Args:
         service_config(dict): output temperautre service configuration
@@ -79,10 +81,10 @@ def create_output_temp_service(service_config, hwmanager, bus):
     if hardware is None:
         logger.error("Cannot get dev '%s' for output temp service", dev)
         return None
-    return OutputTempService(hardware, scan_interval_ms, bus)
+    return OutputTempService(hardware, scan_interval_ms, sbus)
 
 
-def create_tank_temp_service(service_config, hwmanager, bus):
+def create_tank_temp_service(service_config, hwmanager, sbus, _):
     """
     Args:
         service_config(dict): tank temperature service configuration
@@ -93,10 +95,10 @@ def create_tank_temp_service(service_config, hwmanager, bus):
     if hardware is None:
         logger.error("Cannot get dev '%s' in tank temp service", dev)
         return None
-    return TankTempService(hardware, scan_interval_ms, bus)
+    return TankTempService(hardware, scan_interval_ms, sbus)
 
 
-def create_tank_water_service(service_config, hwmanager, bus):
+def create_tank_water_service(service_config, hwmanager, sbus):
     """
     Args:
         service_config(dict): tank water service configuration
@@ -107,10 +109,10 @@ def create_tank_water_service(service_config, hwmanager, bus):
     if hardware is None:
         logger.error("Cannot get dev '%s' in tank water service", dev)
         return None
-    return TankWaterService(hardware, scan_interval_ms, bus)
+    return TankWaterService(hardware, scan_interval_ms, sbus)
 
 
-def create_refill_service(service_config, hwmanager, bus):
+def create_refill_service(service_config, hwmanager, sbus, cbus):
     """
     Args:
         service_config(dict): refill service configuration
@@ -121,10 +123,10 @@ def create_refill_service(service_config, hwmanager, bus):
     if hardware is None:
         logger.error("Cannot get dev '%s' in refill service", dev)
         return None
-    return RefillService(hardware, scan_interval_ms, bus)
+    return RefillService(hardware, scan_interval_ms, sbus, cbus)
 
 
-def create_heater_service(service_config, hwmanager, bus):
+def create_heater_service(service_config, hwmanager, sbus, cbus):
     """
     Args:
         service_config(dict): heater service configuration
@@ -140,10 +142,10 @@ def create_heater_service(service_config, hwmanager, bus):
     if pid_dev is None:
         logger.error("Cannot get dev '%s' in heater service", pid)
         return None
-    return Heater(pwm_dev, pid_dev, scan_interval_ms, bus)
+    return Heater(pwm_dev, pid_dev, scan_interval_ms, sbus, cbus)
 
 
-def create_barista_service(service_config, hwmanager, bus):
+def create_barista_service(service_config, hwmanager, sbus, cbus):
     """
     Args:
         service_config(dict): heater service configuration
@@ -167,7 +169,7 @@ def create_barista_service(service_config, hwmanager, bus):
     speed = service_config['default_moving_speed']
     return Barista(moving_dev, extruder_dev, pid_dev,
                    WasteWaterPosition(x=pos['x'], y=pos['y'], z=pos['z']),
-                   speed, bus)
+                   speed, sbus, cbus)
 
 
 SERVICE_MAPPING = {

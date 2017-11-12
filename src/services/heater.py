@@ -8,16 +8,16 @@ from services.tank_temp_service import TankTempClient
 
 
 class Heater(object):
-    def __init__(self, pwm, pid, scan_interval_ms, bus):
+    def __init__(self, pwm, pid, scan_interval_ms, sbus, cbus):
         self._pwm = pwm
         self._pid = pid
         self._interval_ms = scan_interval_ms
         self._pwm_task = None
-        self._bus = bus
+        self._bus = sbus
         self._target_temp = 0
         self._stop = False
         self._stop_event = asyncio.Event()
-        self._tank_temp_client = TankTempClient(bus)
+        self._tank_temp_client = TankTempClient(cbus)
 
     async def start(self):
         self._stop = False

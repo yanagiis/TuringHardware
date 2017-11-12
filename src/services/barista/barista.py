@@ -107,7 +107,7 @@ class TimeTransformer(object):
 
 class Barista(object):
     def __init__(self, moving_dev, extruder_dev, mix_pid_dev,
-                 waste_water_position, default_moving_speed, bus):
+                 waste_water_position, default_moving_speed, sbus, cbus):
         self._commands = {
             "wait": self._create_wait,
             "calibration": self._create_calibration,
@@ -121,10 +121,10 @@ class Barista(object):
         self._extruder_dev = extruder_dev
         self._waste_water_position = waste_water_position
         self._default_moving_speed = 5000
-        self._bus = bus
-        self._refill = RefillClient(bus)
-        self._output_temp = OutputTempClient(bus)
-        self._tank_temp = TankTempClient(bus)
+        self._bus = sbus
+        self._refill = RefillClient(cbus)
+        self._output_temp = OutputTempClient(cbus)
+        self._tank_temp = TankTempClient(cbus)
         self._water_transformer = WaterTransformer(mix_pid_dev,
                                                    self._output_temp)
         self._time_transformer = TimeTransformer()
