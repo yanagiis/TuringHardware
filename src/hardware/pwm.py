@@ -48,12 +48,10 @@ class SWPWM(PWM):
         self._dutycycle = config.dutycycle
         self._freq = config.frequency
         self._gpio = None
-        self._lock = None
         self._stop = False
         self._stop_event = asyncio.Event()
 
     def open(self):
-        self._lock = threading.Lock()
         while True:
             try:
                 self._gpio = GPIO(self._gpio_pin, "out")
@@ -76,9 +74,7 @@ class SWPWM(PWM):
     def dutycycle(self, dutycycle):
         if not 0 <= dutycycle <= 1:
             raise ValueError("Duty cycle should be ranged in 0 and 1")
-        self._lock.acquire()
         self._dutycycle = dutycycle
-        self._lock.release()
 
     @property
     def frequency(self):
@@ -89,17 +85,13 @@ class SWPWM(PWM):
 
     @frequency.setter
     def frequency(self, freq):
-        self._lock.acquire()
         self._freq = freq
-        self._lock.release()
 
     async def start(self):
         self._stop = False
         while not self._stop:
-            self._lock.acquire()
             on_time = self._dutycycle / self._freq
             off_time = (1 - self._dutycycle) / self._freq
-            self._lock.release()
             if on_time > 0:
                 self._gpio.write(True)
                 await asyncio.sleep(on_time)
