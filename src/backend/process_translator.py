@@ -66,9 +66,13 @@ def _spiral_to_points(process):
         point.f = feedrate
         point.e = point_water
 
-    points.insert(0,
-                  Point.create_move_point(
-                      x=coordinates_x, y=coordinates_y, z=z_from, f=5000))
+    move_point = Point()
+    move_point.f = 5000
+    move_point.x = radius_from
+    move_point.y = 0
+    move_point.z = z_from
+    points.insert(0, move_point)
+
     return points
 
 
