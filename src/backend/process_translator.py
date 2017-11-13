@@ -103,7 +103,7 @@ def _wait_to_points(process):
 
 
 def _mix_to_points(process):
-    return [command.Mix(process['mix'])]
+    return [command.Mix(process['temperature'])]
 
 
 def _calibration_to_points(_):
