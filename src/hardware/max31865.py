@@ -102,7 +102,7 @@ class MAX31865(Sensor):
     def disconnect(self):
         logger.info("Disconnect max31865")
         if self.is_connected():
-            self._disable()
+            #self._disable()
             self._spi.close()
         self._is_connected = False
 
