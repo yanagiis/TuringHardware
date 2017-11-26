@@ -8,7 +8,7 @@ from hardware.error import HardwareError
 
 
 class OutputTempService(object):
-    def __init__(self, sensor, scan_interval_ms, sbus, cbus):
+    def __init__(self, sensor, scan_interval_ms, sbus):
         """
         Args:
             sensor: temperature sensor, can be max31856 and max31865
@@ -16,7 +16,6 @@ class OutputTempService(object):
         """
         self._sensor = sensor
         self._sbus = sbus
-        self._cbus = cbus
         self._interval = scan_interval_ms
         self._error_count = 0
         self._tempc = None
