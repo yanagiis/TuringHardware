@@ -36,5 +36,5 @@ class TankTemperatureView(web.View):
         await heater_client.set_temperature(temperature)
 
         return await response.response(200,
-                                       'get tank temperature successfully',
+                                       'Set tank temperature successfully',
                                        {"tank_temperature": temperature})
