@@ -219,6 +219,7 @@ class Barista(object):
                 if diff < 0.5 and slope < 3 / 5:
                     break
                 previous_temperature = current_temperature
+            await asyncio.sleep(1.5)
             return True
 
         return implement
