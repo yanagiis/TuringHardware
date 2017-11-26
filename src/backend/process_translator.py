@@ -84,10 +84,10 @@ def _fixedpoint_to_points(process):
         Point.create_move_point(x=coordinates_x, y=coordinates_y, z=z, f=5000),
     ]
 
-    water_per_point = float(water) / (time * 100)
-    for _ in range(time * 100):
+    water_per_point = float(water) / (time * 10)
+    for _ in range(time * 10):
         points.append(
-            Point.create_point(e=water_per_point, f=0.01, t=temperature))
+            Point.create_point(e=water_per_point, f=0.1, t=temperature))
     return points
 
 
