@@ -40,13 +40,13 @@ def _spiral_to_points(process):
     points = []
     radius = radius_from
     while current_theta < rotate_theta:
-        x = radius * math.cos(math.radians(current_theta))
-        y = radius * math.sin(math.radians(current_theta))
-        points.append(Point.create_point(x=x, y=y))
-
         theta = (360 * POINT_INTERVAL) / (2 * math.pi * radius)
         radius += (acceleration * theta)
         current_theta += theta
+
+        x = radius * math.cos(math.radians(current_theta))
+        y = radius * math.sin(math.radians(current_theta))
+        points.append(Point.create_point(x=x, y=y))
 
     # translate z
     z = z_from
@@ -66,11 +66,7 @@ def _spiral_to_points(process):
         point.f = feedrate
         point.e = point_water
 
-    move_point = Point()
-    move_point.f = 5000
-    move_point.x = radius_from
-    move_point.y = 0
-    move_point.z = z_from
+    move_point = Point.create_move_point(radius_from, 0, z_from, 5000)
     points.insert(0, move_point)
 
     return points
