@@ -80,7 +80,7 @@ class TimeTransformer(object):
         if point.time is not None:
             return
         distance = self._calc_distance(point)
-        if distance == 0:
+        if point.x is None and point.y is None and point.z is None:
             point.time = point.f
         else:
             point.time = distance * 60 / point.f
@@ -209,7 +209,7 @@ class Barista(object):
             await self._move_to_waste_water_position()
             points = [
                 Point.create_point(e=0.05, t=target_temperature, time=0.01)
-            ] * 200
+            ] * 100
             previous_temperature = await self._output_temp.get_temperature()
             while True:
                 await self._handle_point(points)
