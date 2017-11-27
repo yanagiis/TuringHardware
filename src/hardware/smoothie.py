@@ -34,18 +34,18 @@ class Smoothie(object):
     def disconnect(self):
         self._uart.close()
 
-    def execute(self, data):
-        self.send(data)
+    def execute(self, cmd):
+        self.send(cmd)
         if self.recv() != 'ok':
             return False
         return True
 
-    def send(self, data):
+    def send(self, cmd):
         """
         Args:
-            data (str): Gcode to write
+            cmd (str): Gcode to write
         """
-        self._textproto.writeline(data)
+        self._textproto.writeline(cmd)
 
     def recv(self):
         return self._textproto.readline().strip()
