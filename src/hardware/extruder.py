@@ -3,6 +3,7 @@
 
 from lib.proto.textproto import TextProto
 
+
 class Extruder(object):
     def __init__(self, uartdev):
         """
@@ -17,6 +18,8 @@ class Extruder(object):
         Try to connect extruder and check the function is worked or not
         Args:
             retry_times (int): retry times for connect to Smoothie board
+        Returns:
+            bool: True if connect success, otherwise return False
         """
         for _ in range(retry_times):
             self._uart.open()
@@ -30,18 +33,28 @@ class Extruder(object):
     def disconnect(self):
         self._uart.close()
 
-    def execute(self, data):
-        self.send(data)
+    def execute(self, cmd):
+        """ Send a command and wait response
+        Args:
+            cmd (str): Gcode to write
+        Returns:
+            bool: True if smoothie response 'ok', otherwise return False
+        """
+        self.send(cmd)
         if self.recv() != 'ok':
             return False
         return True
 
-    def send(self, data):
+    def send(self, cmd):
         """
         Args:
-            data (str): Hcode to write
+            cmd (str): Hcode to write
         """
-        self._textproto.writeline(data)
+        self._textproto.writeline(cmd)
 
     def recv(self):
+        """ Recieve a response
+        Returns:
+            string: response
+        """
         return self._textproto.readline().strip()

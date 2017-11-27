@@ -35,17 +35,27 @@ class Smoothie(object):
         self._uart.close()
 
     def execute(self, cmd):
+        """ Send a command and wait response
+        Args:
+            cmd (str): Gcode to write
+        Returns:
+            bool: True if smoothie response 'ok', otherwise return False
+        """
         self.send(cmd)
         if self.recv() != 'ok':
             return False
         return True
 
     def send(self, cmd):
-        """
+        """ Send a command
         Args:
             cmd (str): Gcode to write
         """
         self._textproto.writeline(cmd)
 
     def recv(self):
+        """ Recieve a response
+        Returns:
+            string: response
+        """
         return self._textproto.readline().strip()
