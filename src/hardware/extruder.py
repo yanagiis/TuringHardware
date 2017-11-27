@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from lib.proto.textproto import TextProto
+from logzero import logger
 
 
 class Extruder(object):
@@ -21,13 +22,16 @@ class Extruder(object):
         Returns:
             bool: True if connect success, otherwise return False
         """
+        logger.info("Connect to extruder ...")
         for _ in range(retry_times):
             self._uart.open()
             if self.execute('') is not True:
                 self._uart.close()
                 continue
 
+            logger.info("Connect to extruder successfully")
             return True
+        logger.error("Failed to connect extruder")
         return False
 
     def disconnect(self):

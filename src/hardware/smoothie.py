@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from lib.proto.textproto import TextProto
+from logzero import logger
 
 
 class Smoothie(object):
@@ -22,13 +23,16 @@ class Smoothie(object):
         Returns:
             bool: True if connect success, otherwise return False
         """
+        logger.info("Connect to smoothie ...")
         for _ in range(retry_times):
             self._uart.open()
             if self.execute('G') is not True:
                 self._uart.close()
                 continue
 
+            logger.info("Connect to smoothie successfully")
             return True
+        logger.error("Failed to connect smoothie")
         return False
 
     def disconnect(self):
