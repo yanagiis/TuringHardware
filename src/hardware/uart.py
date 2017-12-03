@@ -38,9 +38,9 @@ class UART(tio.IO, tio.Reader, tio.Writer):
         """
         self._devpath = devpath
         self._config = uart_config
-        self._serial = serial_for_url(self._devpath, do_not_open=True)
 
     def open(self):
+        self._serial = serial_for_url(self._devpath, do_not_open=True)
         self._serial.baudrate = self._config.baudrate
         self._serial.timeout = self._config.read_timeout
         #self._serial.writeTimeout = self._config.write_timeout
