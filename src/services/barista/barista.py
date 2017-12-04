@@ -275,9 +275,14 @@ class Barista(object):
         for cmd in ['G28', 'G21', 'G90', 'M83']:
             self._moving_dev.execute(cmd)
 
-        while True:
+        while self._stop is not True:
             params = await self._queue.get()
             await self.brew(params)
+        self._stop_event.set()
+
+    async def stop(self):
+        self._stop = True
+        self._stop_event.wait()
 
     async def brew(self, params):
         await self._refill.stop()
@@ -299,6 +304,8 @@ class Barista(object):
 
         self._reset()
         for command in commands:
+            if self._stop is True:
+                break
             await command()
 
         await self._refill.start()
