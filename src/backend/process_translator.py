@@ -90,6 +90,87 @@ def _fixedpoint_to_points(process):
     return points
 
 
+def _circle_to_points(process):
+    coordinates_x = process['coordinates']['x']
+    coordinates_y = process['coordinates']['y']
+    z = process['z']
+    time = process['time']
+    water = process['water']
+    radius = process['radius']
+    cylinder = process['cylinder']
+    temperature = process['temperature']
+
+    points = []
+    current_theta = 0
+    rotate_theta = cylinder * 360
+    step_theta = (360 * POINT_INTERVAL) / (2 * math.pi * radius)
+    while current_theta < rotate_theta:
+        current_theta += step_theta
+        point = Point.create_point(x=radius, y=0, z=z)
+        points.append(_rotate_point(point, current_theta))
+
+    #feedrate
+    path_len = (len(points) - 1) * POINT_INTERVAL
+    feedrate = path_len / (time / 60)
+    point_water = water / len(points)
+    for point in points:
+        _translate_point(point, coordinates_x, coordinates_y)
+        point.t = temperature
+        point.f = feedrate
+        point.e = point_water
+
+    move_point = Point.create_move_point(radius, 0, z, 5000)
+    points.insert(0, move_point)
+
+    return points
+
+
+def _triangle_to_points(process):
+    coordinates_x = process['coordinates']['x']
+    coordinates_y = process['coordinates']['y']
+    z = process['z']
+    time = process['time']
+    water = process['water']
+    cylinder = process['cylinder']
+    radius = process['radius']
+    temperature = process['temperature']
+
+    current_theta = 0
+    rotate_theta = cylinder * 360
+    step_theta = (360 * POINT_INTERVAL) / (2 * math.pi * radius)
+
+    vertex = Point.create_point(x=0, y=radius)
+    vertexs = [
+        _rotate_point(vertex, 0),
+        _rotate_point(vertex, 120),
+        _rotate_point(vertex, 240),
+    ]
+
+    points = []
+    path_len = 0
+    side_length = (2 * radius) / math.sqrt(3)
+
+    while current_theta < rotate_theta:
+        current_theta += step_theta
+        points += [_rotate_point(v, current_theta) for v in vertexs]
+        path_len += side_length * 3
+
+    feedrate = path_len / (time / 60)
+    point_water = water / len(points)
+    for point in points:
+        _translate_point(point, coordinates_x, coordinates_y)
+        point.z = z
+        point.t = temperature
+        point.f = feedrate
+        point.e = point_water
+
+    points.insert(0,
+                  Point.create_move_point(
+                      x=coordinates_x, y=coordinates_y, z=z))
+
+    return points
+
+
 def _move_to_points(process):
     coordinates_x = process['coordinates']['x']
     coordinates_y = process['coordinates']['y']
