@@ -5,6 +5,8 @@ from time import sleep
 from services.barista.point import Point
 from services.barista import command
 
+POINT_INTERVAL = 2
+
 
 def process_to_points(process):
     """
@@ -19,8 +21,6 @@ def process_to_points(process):
 
 
 def _spiral_to_points(process):
-
-    POINT_INTERVAL = 2
 
     coordinates_x = process['coordinates']['x']
     coordinates_y = process['coordinates']['y']
@@ -44,9 +44,9 @@ def _spiral_to_points(process):
         radius += (acceleration * theta)
         current_theta += theta
 
-        x = radius * math.cos(math.radians(current_theta))
-        y = radius * math.sin(math.radians(current_theta))
-        points.append(Point.create_point(x=x, y=y))
+        point = Point.create_point(x=radius, y=0)
+        _rotate_point(point, current_theta)
+        points.append(point)
 
     # translate z
     z = z_from
@@ -60,8 +60,7 @@ def _spiral_to_points(process):
     feedrate = path_len / (time / 60)
     point_water = water / len(points)
     for point in points:
-        point.x += coordinates_x
-        point.y += coordinates_y
+        _translate_point(point, coordinates_x, coordinates_y)
         point.t = temperature
         point.f = feedrate
         point.e = point_water
@@ -114,6 +113,19 @@ def _calibration_to_points(_):
 
 def _home_to_points(_):
     return [command.Home()]
+
+
+def _rotate_point(point, theta):
+    radians = math.radians(theta)
+    cos = math.cos(radians)
+    sin = math.sin(radians)
+    point.x = point.x * cos - point.y * sin
+    point.y = point.x * sin + point.y * cos
+
+
+def _translate_point(point, x, y):
+    point.x += x
+    point.y += y
 
 
 _mapping = {
