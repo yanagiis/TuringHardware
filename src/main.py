@@ -3,13 +3,15 @@
 
 import asyncio
 import argparse
-from contextlib import suppress
+import signal
 
 import yaml
 from hardware.hw_manager import HWManager
 from services.service_manager import ServiceManager
 from services.nats_bus import NatsBus
 from backend.server import start_backend
+
+stop_flag = False
 
 
 async def main():
@@ -36,17 +38,19 @@ async def main():
 
     await start_backend(configuration['backend'], bus)
 
-    while True:
-        await asyncio.sleep(5)
+    signal.signal(signal.SIGINT, stop)
+
+    while stop_flag is not True:
+        await asyncio.sleep(0.5)
 
     await svm.stop_all_services()
+
+
+def stop(_signal, _frame):
+    global stop_flag
+    stop_flag = True
 
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
     loop.run_until_complete(main())
-    pending = asyncio.Task.all_tasks()
-    for task in pending:
-        task.cancel()
-        with suppress(asyncio.CancelledError):
-            loop.run_until_complete(task)
