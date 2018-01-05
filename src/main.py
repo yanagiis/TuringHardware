@@ -30,7 +30,7 @@ async def main():
 
     svm = ServiceManager()
     await svm.import_config(configuration['services'], hwm, bus_config['host'],
-                      bus_config['port'])
+                            bus_config['port'])
     svm.start_all_services()
 
     bus = NatsBus(bus_config['host'], bus_config['port'])
