@@ -66,8 +66,11 @@ class ServiceManager(object):
             loop.create_task(service.start())
 
     async def stop_all_services(self):
-        for _, service in self._services.items():
+        logger.info("Stop all services")
+        for name, service in self._services.items():
+            logger.info("Stop '%s' service", name)
             await service.stop()
+            logger.info("Service '%s' is stopped", name)
 
 
 def create_output_temp_service(service_config, hwmanager, sbus, _):
