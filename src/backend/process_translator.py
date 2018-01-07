@@ -162,9 +162,10 @@ def _triangle_to_points(process):
     point_water = (len(points) - cylinder) / water
 
     for point in points:
-        point.t = temperature
-        point.f = feedrate
-        point.e = point_water
+        if point.f is not None:
+            point.t = temperature
+            point.f = feedrate
+            point.e = point_water
 
     return points
 
