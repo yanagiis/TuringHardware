@@ -38,7 +38,7 @@ class Heater(object):
                 self._pwm.dutycycle = dutycycle / 100
             await asyncio.sleep(float(self._interval_ms) / 1000)
 
-        self._pwm.stop()
+        await self._pwm.stop()
         self._pwm.close()
         self._pwm_task = None
         self._stop_event.set()
