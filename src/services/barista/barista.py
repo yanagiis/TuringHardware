@@ -260,10 +260,10 @@ class Barista(object):
 
             if gcode is not None:
                 while self._moving_dev.recv() != 'ok':
-                    pass
+                    self._moving_dev.send(gcode)
             if hcode is not None:
                 while self._extruder_dev.recv() != 'ok':
-                    pass
+                    self._extruder_dev.send(hcode)
 
     async def start(self):
         await self._bus.reg_rep('barista', self.command_callback)
