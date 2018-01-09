@@ -22,8 +22,6 @@ def point_to_gcode(point):
 
 def point_to_hcode(point):
 
-    if point.e1 is None and point.e2 is None:
-        return None
     if point.time is None:
         return None
 
