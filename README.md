@@ -31,7 +31,7 @@
 
 ##### process to point translator
 
-* PYTHONPATH=`pwd` python backend/test_process_translate.py
+* PYTHONPATH=`pwd` python backend/test_process_translator.py
 
 ### Known Issues
 
