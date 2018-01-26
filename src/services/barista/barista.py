@@ -27,7 +27,7 @@ class WaterTransformer(object):
         self._output_temp = output_temp
         self._accumulated_water = 0
         self._current_target_temperature = None
-        self._current_percentage = None
+        self._ideal_percentage = None
         self.low_temperature = None
         self.high_temperature = None
         self._previous_time = None
@@ -38,7 +38,7 @@ class WaterTransformer(object):
         self._accumulated_water = 0
         self._percentage = 0
         self._current_target_temperature = None
-        self._current_percentage = None
+        self._ideal_percentage = None
         self._previous_time = None
         self._pid.reset()
 
@@ -46,7 +46,7 @@ class WaterTransformer(object):
         if point.t is not None and point.t != self._current_target_temperature:
             self.reset()
             self._current_target_temperature = point.t
-            self._current_percentage = (
+            self._ideal_percentage = (
                 self._current_target_temperature - self.low_temperature) / (
                     self.high_temperature - self.low_temperature)
 
@@ -58,7 +58,7 @@ class WaterTransformer(object):
                     current_time = time.time()
                     diff_time = current_time - self._previous_time
                     self._previous_time = current_time
-                self._percentage = self._current_percentage + self._pid.compute(
+                self._percentage = self._ideal_percentage + self._pid.compute(
                     temperature, self._current_target_temperature,
                     diff_time) / 100
                 if self._percentage > 1:
