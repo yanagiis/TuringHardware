@@ -59,7 +59,7 @@ class Extruder(object):
             for character in cmd:
                 checksum += ord(character)
             checksum += ord(' ')
-            cmd += "S %x" % checksum
+            cmd += " S %x" % checksum
 
         self._textproto.writeline(cmd)
 
