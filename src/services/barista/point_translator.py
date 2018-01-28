@@ -22,8 +22,6 @@ def point_to_gcode(point):
 
 def point_to_hcode(point):
 
-    if point.e1 is None and point.e2 is None:
-        return None
     if point.time is None:
         return None
 
@@ -32,12 +30,6 @@ def point_to_hcode(point):
         hcode += " E0 %0.5f" % point.e1
     if point.e2 is not None and point.e2 != 0:
         hcode += " E1 %0.5f" % point.e2
-    hcode += " T %0.5f " % point.time
-
-    checksum = 0
-    for character in hcode:
-        checksum += ord(character)
-
-    hcode += "S %x" % checksum
+    hcode += " T %0.5f" % point.time
 
     return hcode

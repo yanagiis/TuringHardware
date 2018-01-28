@@ -158,11 +158,11 @@ def _triangle_to_points(process):
         theta += rotate_theta_per_cylinder
 
     total_len = 3 * math.sqrt(3) * radius
-    feedrate = total_len / (time / 60)
-    point_water = (len(points) - cylinder) / water
+    feedrate = (len(points) - cylinder) / (time / 60)
+    point_water =  water / (len(points) - cylinder)
 
     for point in points:
-        if point.f is not None:
+        if point.f is None:
             point.t = temperature
             point.f = feedrate
             point.e = point_water
