@@ -54,11 +54,12 @@ class Extruder(object):
         Args:
             cmd (str): Hcode to write
         """
-        checksum = 0
-        for character in cmd:
-            checksum += ord(character)
-        checksum += ord(' ')
-        cmd += "S %x" % checksum
+        if len(cmd) > 0:
+            checksum = 0
+            for character in cmd:
+                checksum += ord(character)
+            checksum += ord(' ')
+            cmd += "S %x" % checksum
 
         self._textproto.writeline(cmd)
 
