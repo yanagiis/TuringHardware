@@ -26,8 +26,8 @@ class WaterTransformer(object):
         self._pid = pid
         self._output_temp = output_temp
         self._accumulated_water = 0
-        self._current_target_temperature = None
-        self._ideal_percentage = None
+        self._current_target_temperature = 0
+        self._ideal_percentage = 0
         self.low_temperature = None
         self.high_temperature = None
         self._previous_time = None
@@ -37,8 +37,8 @@ class WaterTransformer(object):
     def reset(self):
         self._accumulated_water = 0
         self._percentage = 0
-        self._current_target_temperature = None
-        self._ideal_percentage = None
+        self._current_target_temperature = 0
+        self._ideal_percentage = 0
         self._previous_time = None
         self._pid.reset()
 
@@ -49,6 +49,9 @@ class WaterTransformer(object):
             self._ideal_percentage = (
                 self._current_target_temperature - self.low_temperature) / (
                     self.high_temperature - self.low_temperature)
+            self._percentage = self._ideal_percentage
+            self._pid.lower = self.low_temperature
+            self._pid.high = self.high_temperature
 
         if point.e is not None and point.e != 0:
             if self._accumulated_water >= 10:
@@ -58,9 +61,13 @@ class WaterTransformer(object):
                     current_time = time.time()
                     diff_time = current_time - self._previous_time
                     self._previous_time = current_time
-                self._percentage = self._ideal_percentage + self._pid.compute(
-                    temperature, self._current_target_temperature,
-                    diff_time) / 100
+
+                pidvalue = self._pid.compute(
+                    temperature, self._current_target_temperature, diff_time)
+
+                self._percentage = (pidvalue / (
+                    self.high_temperature - self.low_temperature)) / 100
+
                 if self._percentage > 1:
                     self._percentage = 1
                 elif self._percentage < 0:
@@ -211,12 +218,12 @@ class Barista(object):
                 Point.create_point(e=0.05, t=target_temperature, time=0.01)
             ] * 100
             previous_temperature = await self._output_temp.get_temperature()
-            while True:
+            for _ in range(0, 10):
                 await self._handle_point(points)
                 current_temperature = await self._output_temp.get_temperature()
                 diff = abs(current_temperature - target_temperature)
                 slope = abs(current_temperature - previous_temperature)
-                if diff < 0.5 and slope < 3 / 5:
+                if diff < 1 and slope < 3 / 5:
                     break
                 previous_temperature = current_temperature
             await asyncio.sleep(1.5)
