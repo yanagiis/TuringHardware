@@ -43,8 +43,8 @@ class PID(object):
 
         dinput = measure - self._last_measure
         if diff_time != 0:
-            output = self._pid_p * error + self._iterm - (
-                self._pid_d * dinput / diff_time)
+            output = self._pid_p * error + self._iterm - (self._pid_d *
+                                                          (dinput / diff_time))
         else:
             output = self._pid_p * error
         output = self._limit_value(output)
