@@ -221,7 +221,7 @@ class Barista(object):
             nonlocal self
             await self._move_to_waste_water_position()
             points = [
-                Point.create_point(e=0.05, t=target_temperature, time=0.01)
+                Point.create_point(e=0.20, t=target_temperature, time=0.03)
             ] * 100
             previous_temperature = await self._output_temp.get_temperature()
             for _ in range(0, 10):
