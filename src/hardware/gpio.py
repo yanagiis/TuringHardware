@@ -6,10 +6,6 @@ from lib.tio import tio
 from periphery import GPIO as sysGPIO, GPIOError
 import RPi.GPIO as rGPIO
 
-HARDWARE = gethardware()
-if HARDWARE == 'BCM2709':
-    rGPIO.setmode(rGPIO.BCM)
-
 
 def gethardware():
     # Extract serial from cpuinfo file
@@ -75,3 +71,8 @@ class _SysfsGPIO(object):
 
     def write(self, value):
         return self._gpio.write(value)
+
+
+HARDWARE = gethardware()
+if HARDWARE == 'BCM2709':
+    rGPIO.setmode(rGPIO.BCM)
