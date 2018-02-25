@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import time
+from datetime import datetime, timedelta
 import math
 import asyncio
 from concurrent import futures
@@ -54,13 +55,14 @@ class WaterTransformer(object):
             self._pid.high = self.high_temperature
 
         if point.e is not None and point.e != 0:
-            if self._accumulated_water >= 10:
+            if self._accumulated_water >= 20:
                 temperature = await self._output_temp.get_temperature()
-                diff_time = 0
                 if self._previous_time is not None:
-                    current_time = time.time()
+                    current_time = datetime.now()
                     diff_time = current_time - self._previous_time
                     self._previous_time = current_time
+                else:
+                    self._previous_time = datetime.now()
 
                 pidvalue = self._pid.compute(
                     temperature, self._current_target_temperature, diff_time)
@@ -68,11 +70,12 @@ class WaterTransformer(object):
                 self._percentage = (pidvalue / (
                     self.high_temperature - self.low_temperature)) / 100
 
-                if self._percentage > 1:
-                    self._percentage = 1
-                elif self._percentage < 0:
-                    self._percentage = 0
                 self._accumulated_water = 0
+
+            if self._percentage > 1:
+                self._percentage = 1
+            elif self._percentage < 0:
+                self._percentage = 0
 
             point.e1 = point.e * self._percentage
             point.e2 = point.e - point.e1
