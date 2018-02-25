@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from lib.tio import tio
-from periphery import GPIO, GPIOError
+from hardware.gpio import GPIO
 import asyncio
 import threading
 import time
@@ -52,16 +52,10 @@ class SWPWM(PWM):
         self._stop_event = asyncio.Event()
 
     def open(self):
-        while True:
-            try:
-                self._gpio = GPIO(self._gpio_pin, "out")
-                break
-            except GPIOError:
-                time.sleep(0.1)
-                continue
+        self._gpio = GPIO.getpin(self._gpio_pin, "out")
 
     def close(self):
-        self._gpio = GPIO(self._gpio_pin, "in")
+        self._gpio = None
 
     @property
     def dutycycle(self):
