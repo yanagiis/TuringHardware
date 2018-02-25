@@ -4,7 +4,7 @@
 from logzero import logger
 from hardware.max31865 import MAX31865, MAX31865Config
 from hardware.max31856 import MAX31856, MAX31856Config
-from hardware.pwm import SWPWM, PWMConfig
+from hardware.pwm import HWPWM, SWPWM, PWMConfig
 from hardware.smoothie import Smoothie
 from hardware.extruder import Extruder
 from hardware.spi import HWSPI, SPIConfig
