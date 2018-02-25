@@ -14,7 +14,7 @@ class Heater(object):
         self._interval_ms = scan_interval_ms
         self._pwm_task = None
         self._bus = sbus
-        self._target_temp = 0
+        self._target_temp = 90
         self._stop = False
         self._stop_event = asyncio.Event()
         self._tank_temp_client = TankTempClient(cbus)
