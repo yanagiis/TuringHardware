@@ -63,11 +63,14 @@ class WaterTransformer(object):
                     self._previous_time = current_time
                 else:
                     self._previous_time = datetime.now()
+                    diff_time = timedelta(0)
 
                 pidvalue = self._pid.compute(
-                    temperature, self._current_target_temperature, diff_time)
+                    temperature, self._current_target_temperature,
+                    (diff_time.days * 864000) + (diff_time.seconds * 10) +
+                    (diff_time.microseconds / 100000))
 
-                self._percentage = (pidvalue / (
+                self._percentage = ((pidvalue - self.low_temperature) / (
                     self.high_temperature - self.low_temperature)) / 100
 
                 self._accumulated_water = 0
@@ -130,7 +133,7 @@ class Barista(object):
         self._moving_dev = moving_dev
         self._extruder_dev = extruder_dev
         self._waste_water_position = waste_water_position
-        self._default_moving_speed = 5000
+        self._default_moving_speed = default_moving_speed
         self._bus = sbus
         self._refill = RefillClient(cbus)
         self._output_temp = OutputTempClient(cbus)
