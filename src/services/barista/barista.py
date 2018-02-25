@@ -133,7 +133,7 @@ class Barista(object):
         self._moving_dev = moving_dev
         self._extruder_dev = extruder_dev
         self._waste_water_position = waste_water_position
-        self._default_moving_speed = 5000
+        self._default_moving_speed = default_moving_speed
         self._bus = sbus
         self._refill = RefillClient(cbus)
         self._output_temp = OutputTempClient(cbus)
