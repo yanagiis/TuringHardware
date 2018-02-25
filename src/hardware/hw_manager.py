@@ -120,12 +120,20 @@ def create_max31865(hardware_config, hwm):
     return MAX31865(spidev, config)
 
 
-def create_pwm(hardware_config, _):
+def create_swpwm(hardware_config, _):
     gpio_pin = hardware_config['gpio']
     config = PWMConfig()
     config.dutycycle = hardware_config['dutycycle']
     config.frequency = hardware_config['frequency']
     return SWPWM(gpio_pin, config)
+
+
+def create_hwpwm(hardware_config, _):
+    gpio_pin = hardware_config['gpio']
+    config = PWMConfig()
+    config.dutycycle = hardware_config['dutycycle']
+    config.frequency = hardware_config['frequency']
+    return HWPWM(gpio_pin, config)
 
 
 def create_smoothie(hardware_config, hwm):
@@ -186,7 +194,8 @@ def create_pid(hardware_config, _):
 HARDWARE_MAPPING = {
     "max31856": create_max31856,
     "max31865": create_max31865,
-    "swpwm": create_pwm,
+    "swpwm": create_swpwm,
+    "hwpwm": create_hwpwm,
     "smoothie": create_smoothie,
     "extruder": create_extruder,
     "hwspi": create_hwspi,
