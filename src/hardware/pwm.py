@@ -120,7 +120,8 @@ class HWPWM(PWM):
         self._gpio = None
 
     def open(self):
-        self._gpio = GPIO.PWM(self._gpio_pin, self._freq)
+        rGPIO.setup(self._gpio_pin, rGPIO.OUT)
+        self._gpio = rGPIO.PWM(self._gpio_pin, self._freq)
 
     def close(self):
         self._gpio = None
@@ -136,6 +137,7 @@ class HWPWM(PWM):
     def dutycycle(self, dutycycle):
         if not 0 <= dutycycle <= 1:
             raise ValueError("Duty cycle should be ranged in 0 and 1")
+        self._dutycycle = dutycycle
         self._gpio.ChangeDutyCycle(dutycycle * 100)
 
     @property
@@ -150,7 +152,7 @@ class HWPWM(PWM):
         self._gpio.ChangeFrequency(freq)
 
     async def start(self):
-        self._gpio.start()
+        self._gpio.start(self._dutycycle * 100)
 
     async def stop(self):
         self._gpio.stop()
