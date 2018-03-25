@@ -44,35 +44,34 @@ class WaterTransformer(object):
         self._pid.reset()
 
     async def transform(self, point):
+        if self._previous_time is None:
+            self._previous_time = datetime.now()
+
         if point.t is not None and point.t != self._current_target_temperature:
             self.reset()
             self._current_target_temperature = point.t
             self._ideal_percentage = (
                 self._current_target_temperature - self.low_temperature) / (
                     self.high_temperature - self.low_temperature)
+            self._previous_time = datetime.now()
             self._percentage = self._ideal_percentage
-            self._pid.lower = self.low_temperature
-            self._pid.high = self.high_temperature
+            self._pid.lower = -self._ideal_percentage
+            self._pid.high = float(1 - self._ideal_percentage)
 
         if point.e is not None and point.e != 0:
             if self._accumulated_water >= 20:
                 temperature = await self._output_temp.get_temperature()
-                if self._previous_time is not None:
-                    current_time = datetime.now()
-                    diff_time = current_time - self._previous_time
-                    self._previous_time = current_time
-                else:
-                    self._previous_time = datetime.now()
-                    diff_time = timedelta(0)
+                current_time = datetime.now()
+                diff_time = current_time - self._previous_time
+                self._previous_time = current_time
 
                 pidvalue = self._pid.compute(
                     temperature, self._current_target_temperature,
-                    (diff_time.days * 864000) + (diff_time.seconds * 10) +
-                    (diff_time.microseconds / 100000))
+                    (diff_time.days * 86400) + (diff_time.seconds) +
+                    (diff_time.microseconds / 1000000))
 
-                self._percentage = ((pidvalue - self.low_temperature) / (
-                    self.high_temperature - self.low_temperature)) / 100
 
+                self._percentage = self._ideal_percentage + pidvalue
                 self._accumulated_water = 0
 
             if self._percentage > 1:
